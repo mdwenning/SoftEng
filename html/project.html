@@ -1,0 +1,16 @@
+<head>
+    <title>
+        Create Project
+    </title>
+</head>
+<body>
+<form onsubmit="Function()" method ="post">
+    <label for="ProjectName">Create Project:</label><br>
+    <input type="text" id="ProjectName" name="ProjectName" maxlength="48" size="48">
+</form>
+<script>
+    function Function(){
+        alert("New Project: " + document.getElementById("ProjectName").value);
+    }
+</script>
+</body>

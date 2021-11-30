@@ -1,0 +1,9 @@
+Resources:
+  Function:
+    Type: AWS::Serverless::Function
+    Properties:
+      Timeout: 300
+      MemorySize: 128
+      Handler: taskManager.createProjectHandler
+      CodeUri: s3://vicitpepercitbucket/97a498b48e0fb58ddb7a2515e6dfe16f
+      Runtime: java8.al2
