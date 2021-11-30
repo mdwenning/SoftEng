@@ -4,8 +4,10 @@
     </title>
 </head>
 <body>
-    <button type="button" name="CreateProject">Create Project</button>
-    <input type="text" id="ProjectName" name="ProjectName" maxlength="48" size="48">
+    <form onsubmit="Function()">
+        <label for="ProjectName">Create Project:</label><br>
+        <input type="text" id="ProjectName" name="ProjectName" maxlength="48" size="48">
+    </form>
     <script>
         function Function(){
             alert("New Project: " + document.getElementById("ProjectName").value);
