@@ -7,7 +7,7 @@ import java.sql.ResultSet;
 
 public class projectsDAO {
     java.sql.Connection conn;
-    final String tblName = "Project";
+    final String tblName = "sys.Project";
 
     public projectsDAO(){
         try  {
@@ -28,8 +28,10 @@ public class projectsDAO {
                 rs.close();
                 return false;
             }
-            ps = conn.prepareStatement("INSERT INTO " + tblName + " (name) value(?);");
-            ps.setString(1, project.name);
+            ps = conn.prepareStatement("INSERT INTO " + tblName + " (idProject, name, isArchived) value(?,?,?);");
+            ps.setString(1, project.idProject.toString());
+            ps.setString(2, project.name);
+            ps.setInt(3, 0);
             ps.execute();
             return true;
         }

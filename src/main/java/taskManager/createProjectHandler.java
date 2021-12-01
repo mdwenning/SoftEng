@@ -9,6 +9,7 @@ import taskManager.http.createProjectResponse;
 import taskManager.model.Project;
 
 public class createProjectHandler implements RequestHandler<createProjectRequest, createProjectResponse> {
+
     boolean createProject(String name) throws Exception{
         projectsDAO dao = new projectsDAO();
         Project exist = dao.getProject(name);
