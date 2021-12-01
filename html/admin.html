@@ -10,7 +10,9 @@
 	</div>
 
 	<h1>Archived Projects </h1><br>
-	<div id='Archived Projects'>
+	<div>
+		<ul id="ArchivedProjects">
+		</ul>
 	</div>
 	<br>
 
@@ -29,7 +31,11 @@
     		{
     			projects = data['list'];
     			for (var i = 0; i < projects.length; i++) {
-    				document.getElementById('ActiveProjects').innerHTML += "<li>" + projects[i]['name'] + "</li>";
+    				if (projects[i]['isArchived'] == 0) {
+    					document.getElementById('ActiveProjects').innerHTML += "<li>" + projects[i]['name'] + "</li>";
+    				}else{
+    					document.getElementById('ArchivedProjects').innerHTML += "<li>" + projects[i]['name'] + "</li>";
+    				}
     			}
             },
             error: function(xhr, status, error) 

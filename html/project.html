@@ -1,37 +1,31 @@
 <head>
-    <title>Create Project</title>
+    <title>Project</title>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
 </head>
 <body>
-    <form id="new-project">
-        <label for="ProjectName">Create Project:</label><br>
-        <input type="text" id="ProjectName" name="name" maxlength="48" size="48">
-        <button type="submit">Submit</button>
-    </form>
+    <h1 id="proj-name">Project name</h1>
     <script>
-    $("#new-project").submit(function(e) {
-    	e.preventDefault(); // Don't just reload the page
-    	
-    	var form = $(this);
-    	var url = "https://s2vj3dtlfl.execute-api.us-east-1.amazonaws.com/alpha/project/"
-    	
-    	$.ajax({
-    		type: "POST",
-    		url: url,
-    		data: form.serialize(),
+    var url = "https://s2vj3dtlfl.execute-api.us-east-1.amazonaws.com/alpha/project/"
+	
+	function load() {
+		const params = new URLSearchParams(window.location.search);
+		const proj_id = params.get('pid');
+	
+		$.ajax({
+    		type: "GET",
+    		url: url + proj_id,
     		success: function(data)
     		{
-    			alert("Success");
-    			// TODO: Redirect to project page
+    			project_name = data['name'];
+    			document.getElementById('proj-name').innerHTML = project_name;
             },
             error: function(xhr, status, error) 
             {
-            	console.log(xhr);
-            	console.log(status);
-            	console.log(error);
-            	alert(error.Message);
+            	alert(xhr.responseJSON['message']);
             }
         });
-    });
+	}
+    
+    window.onload = load;
     </script>
 </body>
