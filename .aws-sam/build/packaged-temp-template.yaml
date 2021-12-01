@@ -5,5 +5,5 @@ Resources:
       Timeout: 300
       MemorySize: 128
       Handler: taskManager.loadProjectHandler
-      CodeUri: s3://vicitpepercitbucket/df4a3f5b0892b5f02599591167f285bf
+      CodeUri: s3://vicitpepercitbucket/14b06d9fed33af8d8766d8f97b059cc7
       Runtime: java8.al2

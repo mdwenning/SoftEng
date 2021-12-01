@@ -9,14 +9,14 @@ import java.util.List;
 
 public class loadProjectResponse {
     public final String name;
-    public final List<Teammate> mems;
+    public final List<Teammate> teammates;
     public final List<Task> tasks;
     public final int statusCode;
     public final String error;
 
     public loadProjectResponse(String name, List<Teammate> mems, List<Task> tasks, int statusCode){
         this.name = name;
-        this.mems = mems;
+        this.teammates = mems;
         this.tasks = tasks;
         this.statusCode = statusCode;
         this.error = "";
@@ -24,7 +24,7 @@ public class loadProjectResponse {
 
     public loadProjectResponse(int statusCode, String error){
         this.name = "";
-        this.mems = new ArrayList<Teammate>();
+        this.teammates = new ArrayList<Teammate>();
         this.tasks = new ArrayList<Task>();
         this.statusCode = statusCode;
         this.error = error;

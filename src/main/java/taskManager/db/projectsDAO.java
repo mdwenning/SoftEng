@@ -115,10 +115,12 @@ public class projectsDAO {
 
     public List<Teammate> getAllTeammates(String project) throws Exception {
         List<Teammate> allTeammates = new ArrayList<>();
-        Project p = getProject(project);
         try {
             List<Teammate> all = new ArrayList<>();
-
+            Project p = getProject(project);
+            if(p == null){
+                throw new Exception("PROJECT DOESN'T EXIST");
+            }
             Statement statement = conn.createStatement();
             String query = "SELECT * FROM " + "sys.Teammate" + ";";
             ResultSet resultSet = statement.executeQuery(query);
@@ -134,17 +136,17 @@ public class projectsDAO {
                 }
             }
             return allTeammates;
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             throw new Exception("Failed in getting teammates: " + e.getMessage());
         }
     }
 
     public List<Task> getAllTasks(String project) throws Exception {
         List<Task> allTasks = new ArrayList<>();
-        Project p = getProject(project);
         try {
             List<Task> all = new ArrayList<>();
-
+            Project p = getProject(project);
             Statement statement = conn.createStatement();
             String query = "SELECT * FROM " + "sys.Task" + ";";
             ResultSet resultSet = statement.executeQuery(query);
