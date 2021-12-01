@@ -27,7 +27,8 @@ public class createProjectHandler implements RequestHandler<createProjectRequest
         try{
             if (createProject(req.name)) {
                 response = new createProjectResponse(req.name);
-            } else {
+            }
+            else {
                 response = new createProjectResponse(req.name, 422);
             }
         }

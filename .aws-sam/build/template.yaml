@@ -4,6 +4,6 @@ Resources:
     Properties:
       Timeout: 300
       MemorySize: 128
-      Handler: taskManager.createProjectHandler
+      Handler: taskManager.loadProjectHandler
       CodeUri: Function
       Runtime: java8.al2

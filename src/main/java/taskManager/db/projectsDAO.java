@@ -1,16 +1,21 @@
 package taskManager.db;
 
+import taskManager.model.Assignment;
 import taskManager.model.Project;
+import taskManager.model.Task;
+import taskManager.model.Teammate;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
 
 public class projectsDAO {
     java.sql.Connection conn;
-    final String tblName = "sys.Project";
 
-    public projectsDAO(){
-        try  {
+    public projectsDAO() {
+        try {
             conn = DatabaseUtil.connect();
         } catch (Exception e) {
             e.printStackTrace();
@@ -18,38 +23,61 @@ public class projectsDAO {
         }
     }
 
-    public boolean addProject(Project project) throws Exception{
-        try{
-            PreparedStatement ps = conn.prepareStatement("SELECT * FROM " + tblName + " WHERE name = ?;");
+    public boolean addProject(Project project) throws Exception {
+        try {
+            PreparedStatement ps = conn.prepareStatement("SELECT * FROM " + "sys.Project" + " WHERE name = ?;");
             ps.setString(1, project.name);
             ResultSet rs = ps.executeQuery();
-            while(rs.next()){
+            while (rs.next()) {
                 Project p = generateProject(rs);
                 rs.close();
                 return false;
             }
-            ps = conn.prepareStatement("INSERT INTO " + tblName + " (idProject, name, isArchived) value(?,?,?);");
-            ps.setString(1, project.idProject.toString());
+            ps = conn.prepareStatement("INSERT INTO " + "sys.Project" + " (idProject, name, isArchived) value(?,?,?);");
+            ps.setString(1, project.idProject);
             ps.setString(2, project.name);
             ps.setInt(3, 0);
             ps.execute();
             return true;
-        }
-        catch(Exception e){
+        } catch (Exception e) {
             throw new Exception("Failed to create project: " + e.getMessage());
         }
     }
 
-    public Project generateProject(ResultSet rs) throws Exception{
+    public Project generateProject(ResultSet rs) throws Exception {
         String name = rs.getString("name");
-        return new Project(name);
+        String idProject = rs.getString("idProject");
+        int isArchived = rs.getInt("isArchived");
+        return new Project(name, idProject, isArchived);
     }
 
-    public Project getProject(String name) throws Exception{
+    public Teammate generateTeammate(ResultSet rs) throws Exception {
+        String name = rs.getString("name");
+        String idProject = rs.getString("idProject");
+        String idTeammate = rs.getString("idTeammate");
+        return new Teammate(name, idTeammate, idProject);
+    }
+
+    public Task generateTask(ResultSet rs) throws Exception {
+        String idTask = rs.getString("idTask");
+        String idProject = rs.getString("idProject");
+        String idParent = rs.getString("idParent");
+        String name = rs.getString("name");
+        int isComplete = rs.getInt("isComplete");
+        return new Task(idTask, idProject, idParent, name, isComplete);
+    }
+
+    public Assignment generateAssignment(ResultSet rs) throws Exception {
+        String idTask = rs.getString("idTask");
+        String idTeammate = rs.getString("idTeammate");
+        return new Assignment(idTask, idTeammate);
+    }
+
+    public Project getProject(String name) throws Exception {
         try {
             Project project = null;
-            PreparedStatement ps = conn.prepareStatement("SELECT * FROM " + tblName + " WHERE name=?;");
-            ps.setString(1,  name);
+            PreparedStatement ps = conn.prepareStatement("SELECT * FROM " + "sys.Project" + " WHERE name=?;");
+            ps.setString(1, name);
             ResultSet rs = ps.executeQuery();
 
             while (rs.next()) {
@@ -65,4 +93,76 @@ public class projectsDAO {
             throw new Exception("Failed in getting project: " + e.getMessage());
         }
     }
+
+    public List<Project> getAllProjects() throws Exception {
+        List<Project> allProjects = new ArrayList<>();
+        try {
+            Statement statement = conn.createStatement();
+            String query = "SELECT * FROM " + "sys.Project" + ";";
+            ResultSet resultSet = statement.executeQuery(query);
+
+            while (resultSet.next()) {
+                Project p = generateProject(resultSet);
+                allProjects.add(p);
+            }
+            resultSet.close();
+            statement.close();
+            return allProjects;
+        } catch (Exception e) {
+            throw new Exception("Failed in getting projects: " + e.getMessage());
+        }
+    }
+
+    public List<Teammate> getAllTeammates(String project) throws Exception {
+        List<Teammate> allTeammates = new ArrayList<>();
+        Project p = getProject(project);
+        try {
+            List<Teammate> all = new ArrayList<>();
+
+            Statement statement = conn.createStatement();
+            String query = "SELECT * FROM " + "sys.Teammate" + ";";
+            ResultSet resultSet = statement.executeQuery(query);
+            while (resultSet.next()) {
+                Teammate t = generateTeammate(resultSet);
+                all.add(t);
+            }
+            resultSet.close();
+            statement.close();
+            for (Teammate t : all) {
+                if (t.idProject == p.idProject) {
+                    allTeammates.add(t);
+                }
+            }
+            return allTeammates;
+        } catch (Exception e) {
+            throw new Exception("Failed in getting teammates: " + e.getMessage());
+        }
+    }
+
+    public List<Task> getAllTasks(String project) throws Exception {
+        List<Task> allTasks = new ArrayList<>();
+        Project p = getProject(project);
+        try {
+            List<Task> all = new ArrayList<>();
+
+            Statement statement = conn.createStatement();
+            String query = "SELECT * FROM " + "sys.Task" + ";";
+            ResultSet resultSet = statement.executeQuery(query);
+            while (resultSet.next()) {
+                Task t = generateTask(resultSet);
+                all.add(t);
+            }
+            resultSet.close();
+            statement.close();
+            for (Task t : all) {
+                if (t.idProject == p.idProject) {
+                    allTasks.add(t);
+                }
+            }
+            return allTasks;
+        } catch (Exception e) {
+            throw new Exception("Failed in getting tasks: " + e.getMessage());
+        }
+    }
 }
+
