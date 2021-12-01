@@ -1,19 +1,47 @@
 <head>
-    <title>
-        Administrator
-    </title>
+    <title>Administrator</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
 </head>
 <body>
-<h1>Active Projects</h1><br>
-<div id="ActiveProjects"></div>
+	<h1>Active Projects</h1><br>
+	<div>
+		<ul id="ActiveProjects">
+		</ul>
+	</div>
 
-<h1>Archived Projects </h1><br>
-<div id='Archived Projects'></div><br>
+	<h1>Archived Projects </h1><br>
+	<div id='Archived Projects'>
+	</div>
+	<br>
 
-<form name="ArchiveProject" method="post">
-    <input type="button" value="Archive" id="Archive">
-</form>
-<form name="DeleteProject" method="post">
-    <input type="button" value="Delete" id="Delete">
-</form>
+	<form id="update-project">
+    	<input type="button" value="Archive" id="Archive">
+    	<input type="button" value="Delete" id="Delete">
+	</form>
+	<script>
+	var url = "https://s2vj3dtlfl.execute-api.us-east-1.amazonaws.com/alpha/project"
+	
+	function load() {
+		$.ajax({
+    		type: "GET",
+    		url: url,
+    		success: function(data)
+    		{
+    			projects = data['list'];
+    			for (var i = 0; i < projects.length; i++) {
+    				document.getElementById('ActiveProjects').innerHTML += "<li>" + projects[i]['name'] + "</li>";
+    			}
+            },
+            error: function(xhr, status, error) 
+            {
+            	console.log(xhr);
+            	console.log(status);
+            	console.log(error);
+            	alert(error.Message);
+            }
+        });
+	}
+    
+    window.onload = load;
+    </script>
 </body>
