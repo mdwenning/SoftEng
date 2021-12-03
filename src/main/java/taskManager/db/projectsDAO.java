@@ -70,7 +70,8 @@ public class projectsDAO {
     public Assignment generateAssignment(ResultSet rs) throws Exception {
         String idTask = rs.getString("idTask");
         String idTeammate = rs.getString("idTeammate");
-        return new Assignment(idTask, idTeammate);
+        String idProject = rs.getString("idProject");
+        return new Assignment(idTask, idTeammate, idProject);
     }
 
     public Project getProject(String name) throws Exception {
@@ -164,6 +165,50 @@ public class projectsDAO {
             return allTasks;
         } catch (Exception e) {
             throw new Exception("Failed in getting tasks: " + e.getMessage());
+        }
+    }
+
+    public Teammate getTeammate(String name, String projectName) throws Exception {
+        try {
+            Teammate teammate = null;
+            Project project = getProject(projectName);
+            String idProject = project.idProject;
+            PreparedStatement ps = conn.prepareStatement("SELECT * FROM " + "sys.Teammate" + " WHERE (name, idProject) = (?,?);");
+            ps.setString(1, name);
+            ps.setString(2, idProject);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                teammate = generateTeammate(rs);
+            }
+            rs.close();
+            ps.close();
+            return teammate;
+        }
+        catch(Exception e){
+            e.printStackTrace();
+            throw new Exception("Failed in adding teammate: " + e.getMessage());
+        }
+    }
+
+    public boolean addTeammate(Teammate teammate) throws Exception{
+        try {
+            PreparedStatement ps = conn.prepareStatement("SELECT * FROM " + "sys.Teammate" + " WHERE (name, idProject) = (?,?);");
+            ps.setString(1, teammate.name);
+            ps.setString(2, teammate.idProject);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                Teammate t = generateTeammate(rs);
+                rs.close();
+                return false;
+            }
+            ps = conn.prepareStatement("INSERT INTO " + "sys.Teammate" + " (idTeammate, idProject, name) value(?,?,?);");
+            ps.setString(3, teammate.name);
+            ps.setString(1, teammate.idTeammate);
+            ps.setString(2, teammate.idProject);
+            ps.execute();
+            return true;
+        } catch (Exception e) {
+            throw new Exception("Failed to create project: " + e.getMessage());
         }
     }
 }
