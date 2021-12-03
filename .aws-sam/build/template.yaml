@@ -4,6 +4,6 @@ Resources:
     Properties:
       Timeout: 300
       MemorySize: 128
-      Handler: taskManager.loadProjectHandler
+      Handler: taskManager.addTeammateHandler
       CodeUri: Function
       Runtime: java8.al2
