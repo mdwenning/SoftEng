@@ -17,8 +17,9 @@
 	<br>
 
 	<form id="update-project">
+		<input type="text" id="pid" placeholder="Enter project ID">
     	<input type="button" value="Archive" id="Archive">
-    	<input type="button" value="Delete" id="Delete">
+    	<input type="submit" value="Delete" id="Delete">
 	</form>
 	<script>
 	var url = "https://s2vj3dtlfl.execute-api.us-east-1.amazonaws.com/alpha/project"
@@ -47,6 +48,30 @@
             }
         });
 	}
+	
+	$("#update-project").submit(function(e) {
+    	e.preventDefault(); // Don't just reload the page
+    	
+    	var form = $(this);
+    	var url = "https://s2vj3dtlfl.execute-api.us-east-1.amazonaws.com/alpha/project/" + document.getElementById("pid").value + "/delete";
+    	
+    	$.ajax({
+    		type: "POST",
+    		url: url,
+    		success: function(data)
+    		{
+    			alert("Success");
+    			window.location.reload();
+            },
+            error: function(xhr, status, error) 
+            {
+            	console.log(xhr);
+            	console.log(status);
+            	console.log(error);
+            	alert(error.Message);
+            }
+        });
+    });
     
     window.onload = load;
     </script>

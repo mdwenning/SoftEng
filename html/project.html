@@ -4,6 +4,25 @@
 </head>
 <body>
     <h1 id="proj-name">Project name</h1>
+    <ul id="teammates">
+    </ul>
+    <ul id="tasks">
+    </ul>
+    <form id="new-teammate">
+        <label for="teammate">New Teammate:</label><br>
+        <input type="text" id="teammate" name="name" maxlength="48" size="48">
+        <button type="submit">Submit</button>
+    </form>
+    <form id="delete-teammate">
+        <label for="teammate-name">Delete Teammate:</label><br>
+        <input type="text" id="teammate-name" name="name" maxlength="48" size="48">
+        <button type="submit">Submit</button>
+    </form>
+    <form id="new-task">
+        <label for="task">New Task:</label><br>
+        <input type="text" id="task" name="name" maxlength="48" size="48">
+        <button type="submit">Submit</button>
+    </form>
     <script>
     var url = "https://s2vj3dtlfl.execute-api.us-east-1.amazonaws.com/alpha/project/"
 	
@@ -11,13 +30,17 @@
 		const params = new URLSearchParams(window.location.search);
 		const proj_id = params.get('pid');
 	
+		console.log(url + proj_id.replaceAll(' ', '+'));
+	
 		$.ajax({
     		type: "GET",
-    		url: url + proj_id,
+    		url: url + proj_id.replaceAll(' ', '+'),
     		success: function(data)
     		{
     			project_name = data['name'];
     			document.getElementById('proj-name').innerHTML = project_name;
+    			getTeammates();
+    			getTasks();
             },
             error: function(xhr, status, error) 
             {
@@ -25,6 +48,126 @@
             }
         });
 	}
+	
+	function getTeammates() {
+		const params = new URLSearchParams(window.location.search);
+		const proj_id = params.get('pid');
+	
+		$.ajax({
+    		type: "GET",
+    		url: url + proj_id.replaceAll(' ', '+') + "/teammates",
+    		success: function(data)
+    		{
+    			teammates = data['list'];
+    			for (var i = 0; i < teammates.length; i++) {
+    				document.getElementById('teammates').innerHTML += "<li>" + teammates[i]['name'] + "</li>";
+    			}
+            },
+            error: function(xhr, status, error) 
+            {
+            	alert(xhr.responseJSON['message']);
+            }
+        });
+	}
+	
+	function getTasks() {
+		const params = new URLSearchParams(window.location.search);
+		const proj_id = params.get('pid');
+	
+		$.ajax({
+    		type: "GET",
+    		url: url + proj_id.replaceAll(' ', '+') + "/tasks",
+    		success: function(data)
+    		{
+    			tasks = data['list'];
+    			for (var i = 0; i < tasks.length; i++) {
+    				document.getElementById('tasks').innerHTML += "<li>" + tasks[i]['name'] + "</li>";
+    			}
+            },
+            error: function(xhr, status, error) 
+            {
+            	alert(xhr.responseJSON['message']);
+            }
+        });
+	}
+	
+	$("#new-teammate").submit(function(e) {
+    	e.preventDefault(); // Don't just reload the page
+    	
+    	var form = $(this);
+    	var url = "https://s2vj3dtlfl.execute-api.us-east-1.amazonaws.com/alpha/project/" + document.getElementById("proj-name").innerHTML + "/teammates?name=" + document.getElementById("teammate").value;
+    	
+    	console.log(url);
+    	
+    	$.ajax({
+    		type: "POST",
+    		url: url,
+    		success: function(data)
+    		{
+    			alert("Success");
+    			window.location.reload();
+            },
+            error: function(xhr, status, error) 
+            {
+            	console.log(xhr);
+            	console.log(status);
+            	console.log(error);
+            	alert(error.Message);
+            }
+        });
+    });
+    
+    $("#delete-teammate").submit(function(e) {
+    	e.preventDefault(); // Don't just reload the page
+    	
+    	var form = $(this);
+    	var url = "https://s2vj3dtlfl.execute-api.us-east-1.amazonaws.com/alpha/teammate/" + document.getElementById("teammate-name").value + "?pid=" + document.getElementById('proj-name').innerHTML;
+    	
+    	console.log(url);
+    	
+    	$.ajax({
+    		type: "POST",
+    		url: url,
+    		success: function(data)
+    		{
+    			alert("Success");
+    			window.location.reload();
+            },
+            error: function(xhr, status, error) 
+            {
+            	console.log(xhr);
+            	console.log(status);
+            	console.log(error);
+            	alert(error.Message);
+            }
+        });
+    });
+    
+    $("#new-task").submit(function(e) {
+    	e.preventDefault(); // Don't just reload the page
+    	
+    	var form = $(this);
+    	var url = "https://s2vj3dtlfl.execute-api.us-east-1.amazonaws.com/alpha/project/" + document.getElementById("proj-name").innerHTML + "/tasks?name=" + document.getElementById('task').value;
+    	
+    	console.log(url);
+    	
+    	$.ajax({
+    		type: "POST",
+    		url: url,
+    		success: function(data)
+    		{
+    			alert("Success");
+    			window.location.reload();
+            },
+            error: function(xhr, status, error) 
+            {
+            	console.log(xhr);
+            	console.log(status);
+            	console.log(error);
+            	alert(error.Message);
+            }
+        });
+    });
     
     window.onload = load;
     </script>
