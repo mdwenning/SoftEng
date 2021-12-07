@@ -10,6 +10,7 @@ import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class projectsDAO {
     java.sql.Connection conn;
@@ -64,7 +65,8 @@ public class projectsDAO {
         String idParent = rs.getString("idParent");
         String name = rs.getString("name");
         int isComplete = rs.getInt("isComplete");
-        return new Task(idTask, idProject, idParent, name, isComplete);
+        int sequence = rs.getInt("sequence");
+        return new Task(idTask, idProject, idParent, name, isComplete, sequence);
     }
 
     public Assignment generateAssignment(ResultSet rs) throws Exception {
@@ -131,9 +133,10 @@ public class projectsDAO {
             }
             resultSet.close();
             statement.close();
-            for (Teammate t : all) {
-                if (t.idProject == p.idProject) {
-                    allTeammates.add(t);
+
+            for (Teammate tm : all) {
+                if (Objects.equals(tm.idProject, p.idProject)) {
+                    allTeammates.add(tm);
                 }
             }
             return allTeammates;
@@ -158,7 +161,7 @@ public class projectsDAO {
             resultSet.close();
             statement.close();
             for (Task t : all) {
-                if (t.idProject == p.idProject) {
+                if (Objects.equals(t.idProject, p.idProject)) {
                     allTasks.add(t);
                 }
             }
@@ -210,6 +213,72 @@ public class projectsDAO {
         } catch (Exception e) {
             throw new Exception("Failed to create project: " + e.getMessage());
         }
+    }
+
+    public boolean deleteTeammate(String teammate, String project) throws Exception{
+        try{
+            Project p = getProject(project);
+            PreparedStatement ps = conn.prepareStatement("DELETE FROM sys.Teammate WHERE (name, idProject) = (?, ?);");
+            ps.setString(1, teammate);
+            ps.setString(2, p.idProject);
+            int numAffected = ps.executeUpdate();
+            ps.close();
+            return (numAffected == 1);
+        }
+        catch(Exception e){
+            throw new Exception("Failed to delete teammate from project: " + e.getMessage());
+        }
+    }
+
+    public boolean deleteProject(String project) throws Exception{
+        try{
+            PreparedStatement ps = conn.prepareStatement("DELETE FROM sys.Project WHERE name = ?;");
+            ps.setString(1, project);
+            int numAffected = ps.executeUpdate();
+            ps.close();
+            return (numAffected == 1);
+        }
+        catch(Exception e){
+            throw new Exception("Failed to delete project: " + e.getMessage());
+        }
+    }
+
+    public boolean addTask(Task task) throws Exception{
+        try{
+            PreparedStatement ps = conn.prepareStatement("SELECT * FROM " + "sys.Task" + " WHERE (name, idProject) = (?,?);");
+            ps.setString(1, task.name);
+            ps.setString(2, task.idProject);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                Teammate t = generateTeammate(rs);
+                rs.close();
+                return false;
+            }
+            ps = conn.prepareStatement("INSERT INTO " + "sys.Task" + " (idTask, name, idParent, isComplete, idProject, sequence) value(?,?,?,?,?,?);");
+            ps.setString(1, task.idTask);
+            ps.setString(2, task.sequence + ": " + task.name);
+            ps.setString(3, task.idParent);
+            ps.setInt(4, task.isComplete);
+            ps.setString(5, task.idProject);
+            ps.setInt(6, task.sequence);
+            ps.execute();
+            return true;
+        }
+        catch(Exception e){
+            throw new Exception("Failed to add task: " + e.getMessage());
+        }
+    }
+
+    public int getNextSequence(Project project) throws Exception{
+        List<Task> allTasks = getAllTasks(project.name);
+        //Eventually once subdivision is implemented, have the parent id also
+        // passed in so you can gather all tasks under that id in a sub list
+        int high = 0;
+        for(Task t : allTasks){
+            if(t.sequence > high){high = t.sequence;}
+        }
+        return high+1;
+
     }
 }
 

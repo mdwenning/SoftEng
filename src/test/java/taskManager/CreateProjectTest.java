@@ -8,7 +8,7 @@ import taskManager.http.createProjectResponse;
 public class CreateProjectTest extends LambdaTest{
     @Test
     public void testCreateProject(){
-        createProjectRequest cpr = new createProjectRequest("testProject3");
+        createProjectRequest cpr = new createProjectRequest("testProject7");
         createProjectResponse resp = new createProjectHandler().handleRequest(cpr, createContext("create"));
         Assert.assertEquals(400, resp.httpCode);
     }
