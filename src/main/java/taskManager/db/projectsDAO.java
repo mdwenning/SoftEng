@@ -71,9 +71,9 @@ public class projectsDAO {
 
     public Assignment generateAssignment(ResultSet rs) throws Exception {
         String idTask = rs.getString("idTask");
-        String idTeammate = rs.getString("idTeammate");
+        String name = rs.getString("idTeammate");
         String idProject = rs.getString("idProject");
-        return new Assignment(idTask, idTeammate, idProject);
+        return new Assignment(idTask, name, idProject);
     }
 
     public Project getProject(String name) throws Exception {
@@ -279,6 +279,71 @@ public class projectsDAO {
         }
         return high+1;
 
+    }
+
+    public Task getTask(String taskName, String p) throws Exception{
+        try {
+            List<Task> list;
+            Task task = null;
+            list = getAllTasks(p);
+            for (Task t : list) {
+                if (Objects.equals(t.name, taskName)) {
+                    task = t;
+                }
+            }
+            return task;
+        }
+        catch(Exception e){
+            e.printStackTrace();
+            throw new Exception("Failed in getting task: " + e.getMessage());
+        }
+    }
+
+    public void toggleAssignment(Assignment assignment) throws Exception{
+
+        if(checkAssignment(assignment)){
+            //delete assignment
+            PreparedStatement ps = conn.prepareStatement("DELETE FROM " + "sys.Assignments" + " WHERE (idTask, idTeammate, idProject)=(?,?,?)");
+            ps.setString(1, assignment.idTask);
+            ps.setString(2, assignment.idTeammate);
+            ps.setString(3, assignment.idProject);
+            ps.execute();
+        }
+        else{
+            //create new assignment
+            PreparedStatement ps = conn.prepareStatement("INSERT INTO " + "sys.Assignments" + " (idTask, idTeammate, idProject) value(?,?,?);");
+            ps.setString(1, assignment.idTask);
+            ps.setString(2, assignment.idTeammate);
+            ps.setString(3, assignment.idProject);
+            ps.execute();
+        }
+    }
+
+    public boolean checkAssignment(Assignment assignment) throws Exception{
+        try {
+            Assignment a = null;
+            PreparedStatement ps = conn.prepareStatement("SELECT * FROM " + "sys.Assignments" + " WHERE (idTask, idTeammate, idProject)=(?,?,?);");
+            ps.setString(1, assignment.idTask);
+            ps.setString(2, assignment.idTeammate);
+            ps.setString(3, assignment.idProject);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                a = generateAssignment(rs);
+            }
+            rs.close();
+            ps.close();
+
+            if(a == null){
+                return false;
+            }
+            else{
+                return true;
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new Exception("Failed checking assignment existence: " + e.getMessage());
+        }
     }
 }
 
