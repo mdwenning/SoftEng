@@ -1,26 +1,56 @@
 <head>
     <title>Administrator</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
 </head>
 <body>
-	<h1>Active Projects</h1><br>
-	<div>
-		<ul id="ActiveProjects">
-		</ul>
+	<nav class="navbar navbar-dark bg-dark">
+		<div class="container-fluid">
+			<a class="navbar-brand" href="#">Administrator Tools</a>
+		</div>
+	</nav>
+	<div id="loader" style="padding-top: 30vh">
+		<h3 class="mt-4 text-center">Loading...</h3>
+		<div class="d-flex justify-content-center mt-4">
+			<div class="spinner-grow" role="status">
+				<span class="visually-hidden">Loading...</span>
+			</div>
+		</div>
 	</div>
-
-	<h1>Archived Projects </h1><br>
-	<div>
-		<ul id="ArchivedProjects">
-		</ul>
+	<div id="content" style="display: none" class="row container">
+		<div class="col-md-4 mt-3" style="border-right: 1px solid gray">
+			<h1 class="h4">Active Projects</h1>
+			<table class="table table-hover">
+				<thead>
+					<th>Project</th>
+					<th>Status</th>
+				</thead>
+				<tbody id="ActiveProjects">
+				</tbody>
+			</table>
+			<h1 class="h4 mt-5">Archived Projects</h1>
+			<table class="table table-hover">
+				<thead>
+					<th>Project</th>
+				</thead>
+				<tbody id="ArchivedProjects">
+				</tbody>
+			</table>
+			<br>
+			<hr>
+			<form id="update-project">
+				<input type="text" id="pid" placeholder="Enter project ID" class="form-control">
+				<br>
+				<input type="button" value="Archive" id="Archive" class="btn btn-warning">
+				<input type="submit" value="Delete" id="Delete" class="btn btn-danger">
+				<button class="btn btn-danger" id="Delete-loading" style="display: none" disabled>
+  					<span class="spinner-grow spinner-grow-sm" role="status" aria-hidden="true"></span>
+  					Deleting...
+				</button>
+			</form>
+		</div>
 	</div>
-	<br>
-
-	<form id="update-project">
-		<input type="text" id="pid" placeholder="Enter project ID">
-    	<input type="button" value="Archive" id="Archive">
-    	<input type="submit" value="Delete" id="Delete">
-	</form>
 	<script>
 	var url = "https://s2vj3dtlfl.execute-api.us-east-1.amazonaws.com/alpha/project"
 	
@@ -30,12 +60,14 @@
     		url: url,
     		success: function(data)
     		{
+    			document.getElementById('content').style.display = "block";
+    			document.getElementById('loader').style.display = "none";
     			projects = data['list'];
     			for (var i = 0; i < projects.length; i++) {
     				if (projects[i]['isArchived'] == 0) {
-    					document.getElementById('ActiveProjects').innerHTML += "<li>" + projects[i]['name'] + "</li>";
+    					document.getElementById('ActiveProjects').innerHTML += "<tr><td>" + projects[i]['name'] + "</td><td>" + "0%" + "</td></tr>";
     				}else{
-    					document.getElementById('ArchivedProjects').innerHTML += "<li>" + projects[i]['name'] + "</li>";
+    					document.getElementById('ArchivedProjects').innerHTML += "<tr><td>" + projects[i]['name'] + "</td></tr>";
     				}
     			}
             },
@@ -54,21 +86,26 @@
     	
     	var form = $(this);
     	var url = "https://s2vj3dtlfl.execute-api.us-east-1.amazonaws.com/alpha/project/" + document.getElementById("pid").value + "/delete";
+    	document.getElementById('Delete').style.display = "none";
+    	document.getElementById('Delete-loading').style.display = "inline-block";
+    	document.getElementById('pid').disabled = true;
     	
     	$.ajax({
     		type: "POST",
     		url: url,
     		success: function(data)
     		{
-    			alert("Success");
     			window.location.reload();
             },
             error: function(xhr, status, error) 
             {
+            	document.getElementById('Delete').style.display = "inline-block";
+    		document.getElementById('Delete-loading').style.display = "none";
+            	document.getElementById('pid').disabled = false;
             	console.log(xhr);
             	console.log(status);
             	console.log(error);
-            	alert(error.Message);
+            	alert("An error occurred. Please check the console for more information.");
             }
         });
     });
