@@ -10,12 +10,12 @@ public class assignRequest {
     public String getProjectName(){return projectName;}
     public void setProjectName(String projectName){this.projectName = projectName;}
     public String getTaskName(){return taskName;}
-    public void setTaskName(String name){this.taskName = taskName;}
+    public void setTaskName(String taskName){this.taskName = taskName;}
 
-    public assignRequest(String n, String t, String p){
-        this.name = n;
-        this.projectName = p;
-        this.taskName = t;
+    public assignRequest(String name, String taskName, String projectName){
+        this.name = name;
+        this.taskName = taskName;
+        this.projectName = projectName;
     }
 
     public assignRequest(){}
