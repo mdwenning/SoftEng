@@ -162,6 +162,7 @@ public class projectsDAO {
             statement.close();
             for (Task t : all) {
                 if (Objects.equals(t.idProject, p.idProject)) {
+                    t.assignees = getAssignees(t.idTask);
                     allTasks.add(t);
                 }
             }
@@ -169,6 +170,19 @@ public class projectsDAO {
         } catch (Exception e) {
             throw new Exception("Failed in getting tasks: " + e.getMessage());
         }
+    }
+
+    public List<String> getAssignees(String idTask) throws Exception{
+        List<String> assignees = new ArrayList<>();
+
+        PreparedStatement ps = conn.prepareStatement("SELECT * FROM " + "sys.Assignments" + " WHERE idTask=?;");
+        ps.setString(1, idTask);
+        ResultSet resultSet = ps.executeQuery();
+
+        while (resultSet.next()) {
+            assignees.add(getTeammate(resultSet.getString("idTeammate")).name);
+        }
+        return assignees;
     }
 
     public Teammate getTeammate(String name, String projectName) throws Exception {
@@ -179,6 +193,26 @@ public class projectsDAO {
             PreparedStatement ps = conn.prepareStatement("SELECT * FROM " + "sys.Teammate" + " WHERE (name, idProject) = (?,?);");
             ps.setString(1, name);
             ps.setString(2, idProject);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                teammate = generateTeammate(rs);
+            }
+            rs.close();
+            ps.close();
+            return teammate;
+        }
+        catch(Exception e){
+            e.printStackTrace();
+            throw new Exception("Failed in adding teammate: " + e.getMessage());
+        }
+    }
+
+    //USES ONLY ID
+    public Teammate getTeammate(String id) throws Exception {
+        try {
+            Teammate teammate = null;
+            PreparedStatement ps = conn.prepareStatement("SELECT * FROM " + "sys.Teammate" + " WHERE (idTeammate) = (?);");
+            ps.setString(1, id);
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
                 teammate = generateTeammate(rs);
