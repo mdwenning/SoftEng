@@ -9,13 +9,14 @@ import taskManager.model.Project;
 import taskManager.model.Task;
 
 public class addTaskHandler implements RequestHandler<addTaskRequest, addTaskResponse> {
-
+    String id;
     boolean addTask(String name, String projectName) throws Exception{
         int sequence;
         projectsDAO dao = new projectsDAO();
         Project project = dao.getProject(projectName);
         sequence = dao.getNextSequence(project);
         Task task = new Task(name, project.idProject, sequence);
+        id = task.idTask;
         return dao.addTask(task);
     }
 
@@ -24,7 +25,7 @@ public class addTaskHandler implements RequestHandler<addTaskRequest, addTaskRes
         addTaskResponse response;
         try{
             if(addTask(req.name, req.projectName)){
-                response = new addTaskResponse(req.name, req.projectName, 200);
+                response = new addTaskResponse(req.name, req.projectName, id, 200);
             }
             else{
                 response = new addTaskResponse("Error adding task", 422);
