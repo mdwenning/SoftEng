@@ -162,7 +162,9 @@ public class projectsDAO {
             statement.close();
             for (Task t : all) {
                 if (Objects.equals(t.idProject, p.idProject)) {
-                    allTasks.add(t);
+                    Task temp = t;
+                    temp.assignees = getAssignees(t.idTask);
+                    allTasks.add(temp);
                 }
             }
             return allTasks;
@@ -221,7 +223,7 @@ public class projectsDAO {
         }
         catch(Exception e){
             e.printStackTrace();
-            throw new Exception("Failed in adding teammate: " + e.getMessage());
+            throw new Exception("Failed in getting teammate: " + e.getMessage());
         }
     }
 
@@ -283,13 +285,15 @@ public class projectsDAO {
     public boolean deleteProject(String project) throws Exception{
         try{
             List<Task> taskList = getAllTasks(project);
-            for(Task tsk : taskList){
-                deleteTask(tsk);
-            }
-
             List<Teammate> tmList = getAllTeammates(project);
-            for(Teammate tm : tmList){
-                deleteTeammate(tm);
+            Project p = getProject(project);
+
+            for(Task tsk : taskList){
+                for(Teammate tm : tmList){
+                    deleteAssignment(tsk.idTask, tm.idTeammate, p.idProject);
+                    deleteTeammate(tm);
+                }
+                deleteTask(tsk);
             }
 
             PreparedStatement ps = conn.prepareStatement("DELETE FROM sys.Project WHERE name = ?;");
@@ -355,6 +359,28 @@ public class projectsDAO {
 
     }
 
+    public Task getTask(String name, String projectName) throws Exception{
+        try {
+            Task task = null;
+            Project project = getProject(projectName);
+            String idProject = project.idProject;
+            PreparedStatement ps = conn.prepareStatement("SELECT * FROM " + "sys.Task" + " WHERE (name, idProject) = (?,?);");
+            ps.setString(1, name);
+            ps.setString(2, idProject);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                task = generateTask(rs);
+            }
+            rs.close();
+            ps.close();
+            return task;
+        }
+        catch(Exception e){
+            e.printStackTrace();
+            throw new Exception("Failed in getting task: " + e.getMessage());
+        }
+    }
+
     public Task getTask(String idTask) throws Exception{
         try {
             List<Task> list;
@@ -417,6 +443,21 @@ public class projectsDAO {
         } catch (Exception e) {
             e.printStackTrace();
             throw new Exception("Failed checking assignment existence: " + e.getMessage());
+        }
+    }
+
+    public boolean deleteAssignment(String idTask, String idTeammate, String idProject) throws Exception{
+        try{
+            PreparedStatement ps = conn.prepareStatement("DELETE FROM sys.Assignments WHERE (idTask, idTeammate, idProject)=(?,?,?);");
+            ps.setString(1, idTask);
+            ps.setString(2, idTeammate);
+            ps.setString(3, idProject);
+            int numAffected = ps.executeUpdate();
+            ps.close();
+            return (numAffected == 1);
+        }
+        catch(Exception e){
+            throw new Exception("Failed to delete assignment: " + e.getMessage());
         }
     }
 }
