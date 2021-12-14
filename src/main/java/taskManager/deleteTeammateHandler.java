@@ -5,6 +5,7 @@ import com.amazonaws.services.lambda.runtime.RequestHandler;
 import taskManager.db.projectsDAO;
 import taskManager.http.deleteTeammateRequest;
 import taskManager.http.deleteTeammateResponse;
+import taskManager.model.Teammate;
 
 public class deleteTeammateHandler implements RequestHandler<deleteTeammateRequest, deleteTeammateResponse> {
     @Override
@@ -12,7 +13,8 @@ public class deleteTeammateHandler implements RequestHandler<deleteTeammateReque
         deleteTeammateResponse response = null;
         projectsDAO dao = new projectsDAO();
         try {
-            if (dao.deleteTeammate(req.name, req.projectName)) {
+            Teammate delTeammate = dao.getTeammate(req.name, req.projectName);
+            if (dao.deleteTeammate(delTeammate)) {
                 response = new deleteTeammateResponse(req.name, req.projectName, 200);
             } else {
                 response = new deleteTeammateResponse(req.name, req.projectName, 422, "Unable to delete teammate.");

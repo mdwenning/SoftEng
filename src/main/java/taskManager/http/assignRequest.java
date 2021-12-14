@@ -2,20 +2,21 @@ package taskManager.http;
 
 public class assignRequest {
     public String name;
-    public String taskName;
     public String projectName;
+    public String idTask;
 
     public String getName(){return name;}
-    public void setName(String name){this.name = name;}
-    public String getProjectName(){return projectName;}
-    public void setProjectName(String projectName){this.projectName = projectName;}
-    public String getTaskName(){return taskName;}
-    public void setTaskName(String taskName){this.taskName = taskName;}
+    public void setName(String idTeammate){this.projectName = projectName;}
+    public String getProjectName(){return name;}
+    public void setProjectName(String idTeammate){this.projectName = projectName;}
+    public String getidTask(){return idTask;}
+    public void setidTask(String idTask){this.idTask = idTask;}
 
-    public assignRequest(String name, String taskName, String projectName){
+    public assignRequest(String name, String projectName, String idTask){
         this.name = name;
-        this.taskName = taskName;
         this.projectName = projectName;
+        this.idTask = idTask;
+
     }
 
     public assignRequest(){}

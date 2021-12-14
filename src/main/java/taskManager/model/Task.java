@@ -1,5 +1,6 @@
 package taskManager.model;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -19,7 +20,7 @@ public class Task {
         this.name = name;
         this.isComplete = isComplete;
         this.sequence = sequence;
-        this.assignees = null;
+        this.assignees = new ArrayList<>();
     }
     public Task(String idTask, String idProject, String idParent, String name, List<String> assignees, int isComplete, int sequence){
         this.idTask = idTask;
@@ -34,7 +35,7 @@ public class Task {
         this.name = name;
         this.idProject = idProject;
         this.idParent = null;
-        this.assignees = null;
+        this.assignees = new ArrayList<>();
         this.idTask = UUID.randomUUID().toString();
         this.isComplete = 0;
         this.sequence = sequence;

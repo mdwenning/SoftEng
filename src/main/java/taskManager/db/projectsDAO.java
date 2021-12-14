@@ -162,10 +162,30 @@ public class projectsDAO {
             statement.close();
             for (Task t : all) {
                 if (Objects.equals(t.idProject, p.idProject)) {
-                    t.assignees = getAssignees(t.idTask);
-                    allTasks.add(t);
+                    Task temp = t;
+                    temp.assignees = getAssignees(t.idTask);
+                    allTasks.add(temp);
                 }
             }
+            return allTasks;
+        } catch (Exception e) {
+            throw new Exception("Failed in getting tasks: " + e.getMessage());
+        }
+    }
+
+    public List<Task> getAllTasks() throws Exception {
+        List<Task> allTasks = new ArrayList<>();
+        try {
+            List<Task> all = new ArrayList<>();
+            Statement statement = conn.createStatement();
+            String query = "SELECT * FROM " + "sys.Task" + ";";
+            ResultSet resultSet = statement.executeQuery(query);
+            while (resultSet.next()) {
+                Task t = generateTask(resultSet);
+                allTasks.add(t);
+            }
+            resultSet.close();
+            statement.close();
             return allTasks;
         } catch (Exception e) {
             throw new Exception("Failed in getting tasks: " + e.getMessage());
@@ -203,7 +223,7 @@ public class projectsDAO {
         }
         catch(Exception e){
             e.printStackTrace();
-            throw new Exception("Failed in adding teammate: " + e.getMessage());
+            throw new Exception("Failed in getting teammate: " + e.getMessage());
         }
     }
 
@@ -249,12 +269,10 @@ public class projectsDAO {
         }
     }
 
-    public boolean deleteTeammate(String teammate, String project) throws Exception{
+    public boolean deleteTeammate(Teammate tm) throws Exception{
         try{
-            Project p = getProject(project);
-            PreparedStatement ps = conn.prepareStatement("DELETE FROM sys.Teammate WHERE (name, idProject) = (?, ?);");
-            ps.setString(1, teammate);
-            ps.setString(2, p.idProject);
+            PreparedStatement ps = conn.prepareStatement("DELETE FROM sys.Teammate WHERE idTeammate = ?;");
+            ps.setString(1, tm.idTeammate);
             int numAffected = ps.executeUpdate();
             ps.close();
             return (numAffected == 1);
@@ -266,10 +284,23 @@ public class projectsDAO {
 
     public boolean deleteProject(String project) throws Exception{
         try{
+            List<Task> taskList = getAllTasks(project);
+            List<Teammate> tmList = getAllTeammates(project);
+            Project p = getProject(project);
+
+            for(Task tsk : taskList){
+                for(Teammate tm : tmList){
+                    deleteAssignment(tsk.idTask, tm.idTeammate, p.idProject);
+                    deleteTeammate(tm);
+                }
+                deleteTask(tsk);
+            }
+
             PreparedStatement ps = conn.prepareStatement("DELETE FROM sys.Project WHERE name = ?;");
             ps.setString(1, project);
             int numAffected = ps.executeUpdate();
             ps.close();
+
             return (numAffected == 1);
         }
         catch(Exception e){
@@ -303,6 +334,19 @@ public class projectsDAO {
         }
     }
 
+    public boolean deleteTask(Task task) throws Exception{
+        try{
+            PreparedStatement ps = conn.prepareStatement("DELETE FROM sys.Task WHERE idTask = ?;");
+            ps.setString(1, task.idTask);
+            int numAffected = ps.executeUpdate();
+            ps.close();
+            return (numAffected == 1);
+        }
+        catch(Exception e){
+            throw new Exception("Failed to delete task from project: " + e.getMessage());
+        }
+    }
+
     public int getNextSequence(Project project) throws Exception{
         List<Task> allTasks = getAllTasks(project.name);
         //Eventually once subdivision is implemented, have the parent id also
@@ -315,13 +359,35 @@ public class projectsDAO {
 
     }
 
-    public Task getTask(String taskName, String p) throws Exception{
+    public Task getTask(String name, String projectName) throws Exception{
+        try {
+            Task task = null;
+            Project project = getProject(projectName);
+            String idProject = project.idProject;
+            PreparedStatement ps = conn.prepareStatement("SELECT * FROM " + "sys.Task" + " WHERE (name, idProject) = (?,?);");
+            ps.setString(1, name);
+            ps.setString(2, idProject);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                task = generateTask(rs);
+            }
+            rs.close();
+            ps.close();
+            return task;
+        }
+        catch(Exception e){
+            e.printStackTrace();
+            throw new Exception("Failed in getting task: " + e.getMessage());
+        }
+    }
+
+    public Task getTask(String idTask) throws Exception{
         try {
             List<Task> list;
             Task task = null;
-            list = getAllTasks(p);
+            list = getAllTasks();
             for (Task t : list) {
-                if (Objects.equals(t.name, taskName)) {
+                if (Objects.equals(t.idTask, idTask)) {
                     task = t;
                 }
             }
@@ -377,6 +443,21 @@ public class projectsDAO {
         } catch (Exception e) {
             e.printStackTrace();
             throw new Exception("Failed checking assignment existence: " + e.getMessage());
+        }
+    }
+
+    public boolean deleteAssignment(String idTask, String idTeammate, String idProject) throws Exception{
+        try{
+            PreparedStatement ps = conn.prepareStatement("DELETE FROM sys.Assignments WHERE (idTask, idTeammate, idProject)=(?,?,?);");
+            ps.setString(1, idTask);
+            ps.setString(2, idTeammate);
+            ps.setString(3, idProject);
+            int numAffected = ps.executeUpdate();
+            ps.close();
+            return (numAffected == 1);
+        }
+        catch(Exception e){
+            throw new Exception("Failed to delete assignment: " + e.getMessage());
         }
     }
 }
