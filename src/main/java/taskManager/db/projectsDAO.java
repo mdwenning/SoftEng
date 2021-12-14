@@ -270,6 +270,11 @@ public class projectsDAO {
             ps.setString(1, project);
             int numAffected = ps.executeUpdate();
             ps.close();
+
+            List<Task> taskList = getAllTasks(project);
+            for(Task tsk : taskList){
+                deleteTask(tsk);
+            }
             return (numAffected == 1);
         }
         catch(Exception e){
@@ -300,6 +305,21 @@ public class projectsDAO {
         }
         catch(Exception e){
             throw new Exception("Failed to add task: " + e.getMessage());
+        }
+    }
+
+    public boolean deleteTask(Task task) throws Exception{
+        try{
+            //Project p = getProject(project);
+            PreparedStatement ps = conn.prepareStatement("DELETE FROM sys.Task WHERE idTask = ?;");
+            ps.setString(1, task.idTask);
+            //ps.setString(2, p.idProject);
+            int numAffected = ps.executeUpdate();
+            ps.close();
+            return (numAffected == 1);
+        }
+        catch(Exception e){
+            throw new Exception("Failed to delete teammate from project: " + e.getMessage());
         }
     }
 
