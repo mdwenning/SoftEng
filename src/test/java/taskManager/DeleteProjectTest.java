@@ -25,8 +25,6 @@ public class DeleteProjectTest extends LambdaTest{
             addTeammateRequest atmr2 = new addTeammateRequest("testTeammate2", "testProjectDelete");
             addTeammateResponse respT2 = new addTeammateHandler().handleRequest(atmr2, createContext("create"));
 
-
-
             assignRequest ar1 = new assignRequest("testTeammate1", "testProjectDelete", atrsp1.getTaskID());
             assignResponse assignresp1 = new assignmentHandler().handleRequest(ar1, createContext("create"));
             assignRequest ar2 = new assignRequest("testTeammate2", "testProjectDelete", atrsp2.getTaskID());

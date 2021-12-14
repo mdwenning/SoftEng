@@ -269,12 +269,13 @@ public class projectsDAO {
         }
     }
 
-    public boolean deleteTeammate(Teammate tm) throws Exception{
+    public boolean deleteTeammate(Teammate tm) throws Exception{ //Also deletes assignments
         try{
             PreparedStatement ps = conn.prepareStatement("DELETE FROM sys.Teammate WHERE idTeammate = ?;");
             ps.setString(1, tm.idTeammate);
             int numAffected = ps.executeUpdate();
             ps.close();
+            deleteAssignment(tm.idTeammate, tm.idProject);
             return (numAffected == 1);
         }
         catch(Exception e){
@@ -286,16 +287,12 @@ public class projectsDAO {
         try{
             List<Task> taskList = getAllTasks(project);
             List<Teammate> tmList = getAllTeammates(project);
-            Project p = getProject(project);
-
             for(Task tsk : taskList){
-                for(Teammate tm : tmList){
-                    deleteAssignment(tsk.idTask, tm.idTeammate, p.idProject);
-                    deleteTeammate(tm);
-                }
                 deleteTask(tsk);
             }
-
+            for(Teammate tm : tmList){
+                deleteTeammate(tm);
+            }
             PreparedStatement ps = conn.prepareStatement("DELETE FROM sys.Project WHERE name = ?;");
             ps.setString(1, project);
             int numAffected = ps.executeUpdate();
@@ -403,11 +400,7 @@ public class projectsDAO {
 
         if(checkAssignment(assignment)){
             //delete assignment
-            PreparedStatement ps = conn.prepareStatement("DELETE FROM " + "sys.Assignments" + " WHERE (idTask, idTeammate, idProject)=(?,?,?)");
-            ps.setString(1, assignment.idTask);
-            ps.setString(2, assignment.idTeammate);
-            ps.setString(3, assignment.idProject);
-            ps.execute();
+            deleteAssignment(assignment.idTask, assignment.idTeammate, assignment.idProject);
         }
         else{
             //create new assignment
@@ -452,6 +445,19 @@ public class projectsDAO {
             ps.setString(1, idTask);
             ps.setString(2, idTeammate);
             ps.setString(3, idProject);
+            int numAffected = ps.executeUpdate();
+            ps.close();
+            return (numAffected == 1);
+        }
+        catch(Exception e){
+            throw new Exception("Failed to delete assignment: " + e.getMessage());
+        }
+    }
+    public boolean deleteAssignment(String idTeammate, String idProject) throws Exception{
+        try{
+            PreparedStatement ps = conn.prepareStatement("DELETE FROM sys.Assignments WHERE (idTeammate, idProject)=(?,?);");
+            ps.setString(1, idTeammate);
+            ps.setString(2, idProject);
             int numAffected = ps.executeUpdate();
             ps.close();
             return (numAffected == 1);
