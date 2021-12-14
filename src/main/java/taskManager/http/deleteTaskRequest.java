@@ -1,18 +1,14 @@
 package taskManager.http;
 
 public class deleteTaskRequest {
-    public String name;
-    public String projectName;
-    //public void setName(String name){this.name = name;}
-    public void setProjectName(String projectName){this.projectName = projectName;}
-    public String getName(){return name;}
-    public String getProjectName(){return projectName;}
-    public deleteTaskRequest(String name, String projectName){
-        this.name = name;
-        this.projectName = projectName;
+    public String idTask;
+    public void setidTask(String idTask){this.idTask = idTask;}
+    public String getidTask(){return idTask;}
+    public deleteTaskRequest(String idTask){
+        this.idTask = idTask;
     }
     public deleteTaskRequest(){};
     public String toString() {
-        return "Delete(" + name + ": " + projectName + ")";
+        return "Delete(" + idTask + ")";
     }
 }

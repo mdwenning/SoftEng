@@ -13,10 +13,10 @@ import taskManager.model.Task;
 import taskManager.model.Teammate;
 
 public class assignmentHandler implements RequestHandler<assignRequest, assignResponse> {
-    void toggleAssignment(String n, String p, String t) throws Exception{
+    void toggleAssignment(String name, String projectName, String idTask) throws Exception{
         projectsDAO dao = new projectsDAO();
-        Task task = dao.getTask(t, p);
-        Teammate tm = dao.getTeammate(n, p);
+        Task task = dao.getTask(idTask);
+        Teammate tm = dao.getTeammate(name, projectName);
         Assignment assignment = new Assignment(task.idTask, tm.idTeammate, task.idProject);
         dao.toggleAssignment(assignment);
     }
@@ -24,8 +24,8 @@ public class assignmentHandler implements RequestHandler<assignRequest, assignRe
     public assignResponse handleRequest(assignRequest req, Context context){
         assignResponse response;
         try{
-            toggleAssignment(req.name, req.projectName, req.taskName);
-            response = new assignResponse(req.name, req.projectName, req.taskName, 200);
+            toggleAssignment(req.name, req.projectName, req.idTask);
+            response = new assignResponse(req.name, req.projectName, 200);
 
         }
         catch(Exception e){

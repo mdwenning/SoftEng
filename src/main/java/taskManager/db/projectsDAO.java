@@ -162,10 +162,28 @@ public class projectsDAO {
             statement.close();
             for (Task t : all) {
                 if (Objects.equals(t.idProject, p.idProject)) {
-                    t.assignees = getAssignees(t.idTask);
                     allTasks.add(t);
                 }
             }
+            return allTasks;
+        } catch (Exception e) {
+            throw new Exception("Failed in getting tasks: " + e.getMessage());
+        }
+    }
+
+    public List<Task> getAllTasks() throws Exception {
+        List<Task> allTasks = new ArrayList<>();
+        try {
+            List<Task> all = new ArrayList<>();
+            Statement statement = conn.createStatement();
+            String query = "SELECT * FROM " + "sys.Task" + ";";
+            ResultSet resultSet = statement.executeQuery(query);
+            while (resultSet.next()) {
+                Task t = generateTask(resultSet);
+                allTasks.add(t);
+            }
+            resultSet.close();
+            statement.close();
             return allTasks;
         } catch (Exception e) {
             throw new Exception("Failed in getting tasks: " + e.getMessage());
@@ -249,12 +267,10 @@ public class projectsDAO {
         }
     }
 
-    public boolean deleteTeammate(String teammate, String project) throws Exception{
+    public boolean deleteTeammate(Teammate tm) throws Exception{
         try{
-            Project p = getProject(project);
-            PreparedStatement ps = conn.prepareStatement("DELETE FROM sys.Teammate WHERE (name, idProject) = (?, ?);");
-            ps.setString(1, teammate);
-            ps.setString(2, p.idProject);
+            PreparedStatement ps = conn.prepareStatement("DELETE FROM sys.Teammate WHERE idTeammate = ?;");
+            ps.setString(1, tm.idTeammate);
             int numAffected = ps.executeUpdate();
             ps.close();
             return (numAffected == 1);
@@ -266,15 +282,21 @@ public class projectsDAO {
 
     public boolean deleteProject(String project) throws Exception{
         try{
+            List<Task> taskList = getAllTasks(project);
+            for(Task tsk : taskList){
+                deleteTask(tsk);
+            }
+
+            List<Teammate> tmList = getAllTeammates(project);
+            for(Teammate tm : tmList){
+                deleteTeammate(tm);
+            }
+
             PreparedStatement ps = conn.prepareStatement("DELETE FROM sys.Project WHERE name = ?;");
             ps.setString(1, project);
             int numAffected = ps.executeUpdate();
             ps.close();
 
-            List<Task> taskList = getAllTasks(project);
-            for(Task tsk : taskList){
-                deleteTask(tsk);
-            }
             return (numAffected == 1);
         }
         catch(Exception e){
@@ -310,16 +332,14 @@ public class projectsDAO {
 
     public boolean deleteTask(Task task) throws Exception{
         try{
-            //Project p = getProject(project);
             PreparedStatement ps = conn.prepareStatement("DELETE FROM sys.Task WHERE idTask = ?;");
             ps.setString(1, task.idTask);
-            //ps.setString(2, p.idProject);
             int numAffected = ps.executeUpdate();
             ps.close();
             return (numAffected == 1);
         }
         catch(Exception e){
-            throw new Exception("Failed to delete teammate from project: " + e.getMessage());
+            throw new Exception("Failed to delete task from project: " + e.getMessage());
         }
     }
 
@@ -335,13 +355,13 @@ public class projectsDAO {
 
     }
 
-    public Task getTask(String taskName, String p) throws Exception{
+    public Task getTask(String idTask) throws Exception{
         try {
             List<Task> list;
             Task task = null;
-            list = getAllTasks(p);
+            list = getAllTasks();
             for (Task t : list) {
-                if (Objects.equals(t.name, taskName)) {
+                if (Objects.equals(t.idTask, idTask)) {
                     task = t;
                 }
             }

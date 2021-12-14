@@ -13,14 +13,14 @@ public class deleteTaskHandler implements RequestHandler<deleteTaskRequest, dele
         deleteTaskResponse response = null;
         projectsDAO dao = new projectsDAO();
         try {
-            Task delTask = dao.getTask(req.name, req.projectName);
+            Task delTask = dao.getTask(req.idTask);
             if (dao.deleteTask(delTask)) {
-                response = new deleteTaskResponse(req.name, req.projectName, 200);
+                response = new deleteTaskResponse(delTask.name, 200);
             } else {
-                response = new deleteTaskResponse(req.name, req.projectName, 422, "Unable to delete task.");
+                response = new deleteTaskResponse(delTask.name, 422, "Unable to delete task.");
             }
         } catch (Exception e) {
-            response = new deleteTaskResponse(req.name, req.projectName, 403, "Unable to delete task: " + req.name + "(" + e.getMessage() + ")");
+            response = new deleteTaskResponse(req.idTask, 403, "Unable to delete task: " + req.idTask + "(" + e.getMessage() + ")");
         }
 
         return response;

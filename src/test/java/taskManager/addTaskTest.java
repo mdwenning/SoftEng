@@ -2,10 +2,7 @@ package taskManager;
 import java.io.IOException;
 import org.junit.Assert;
 import org.junit.Test;
-import taskManager.http.createProjectRequest;
-import taskManager.http.createProjectResponse;
-import taskManager.http.addTaskRequest;
-import taskManager.http.addTaskResponse;
+import taskManager.http.*;
 
 public class addTaskTest extends LambdaTest{
     @Test
@@ -22,6 +19,10 @@ public class addTaskTest extends LambdaTest{
             Assert.assertEquals(atrsp.toString(), "Task(test task:testProjectTask)");
             Assert.assertEquals(atr.getName(), "test task");
 
+            listTasksRequest ltr = new listTasksRequest("testProjectTask");
+            listTasksResponse resp = new listTasksHandler().handleRequest(ltr, createContext("create"));
+            Assert.assertEquals(200, resp.statusCode);
+
             atr.setName("test task - set");
             Assert.assertEquals(atr.getName(), "test task - set");
             Assert.assertEquals(atr.getprojectName(), "testProjectTask");
@@ -36,4 +37,5 @@ public class addTaskTest extends LambdaTest{
             System.out.println("Error:" + e.getMessage());
         }
     }
+
 }
