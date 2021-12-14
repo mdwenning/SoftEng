@@ -18,5 +18,5 @@ public class addTaskResponse {
         this.name = "";
         this.projectName = "";
     }
-    public String toString(){return "Task("+name+projectName+")";}
+    public String toString(){return "Task("+name+":"+projectName+")";}
 }

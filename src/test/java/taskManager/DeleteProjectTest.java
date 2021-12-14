@@ -9,7 +9,7 @@ import taskManager.http.deleteProjectResponse;
 
 public class DeleteProjectTest extends LambdaTest{
     @Test
-    public void testCreateProject(){
+    public void testDeleteProject(){
         try {
             createProjectRequest cpr = new createProjectRequest("testProjectDelete");
             createProjectResponse respC = new createProjectHandler().handleRequest(cpr, createContext("create"));
