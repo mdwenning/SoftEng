@@ -50,9 +50,10 @@
 			</table>
 			
 			<form id="new-teammate">
-        		<label for="teammate">New Teammate:</label><br>
-        		<input type="text" id="teammate" name="name" maxlength="48" size="48">
-        		<button type="submit">Submit</button>
+				<div class="input-group">
+        			<input type="text" id="teammate" name="name" placeholder="New Teammate" maxlength="48" size="48" class="form-control">
+        			<button type="submit" class="btn btn-primary" id="new-teammate-btn">Add</button>
+        		</div>
     		</form>
 		</div>
 		<div id="projView" class="row">
@@ -84,8 +85,17 @@
 				</form>
 			</div>
 			<div class="col-md-8">
-				<ul id="tasks" style="list-style: none">
-				</ul>
+				<table class="table mt-3">
+					<tbody id="tasks">
+						<td colspan="3">
+							<div class="d-flex justify-content-center">
+								<div class="spinner-border" role="status">
+									<span class="visually-hidden">Loading...</span>
+								</div>
+							</div>
+						</td>
+					</tbody>
+				</table>
 				<form id='new-task' class="mx-3">
 					<div class='input-group'>
 						<input class='form-control' style='width: 75%' type='text' id='task' name='name' maxlength='48' size='48' placeholder='New task'>
@@ -105,8 +115,6 @@
 		const proj_id = params.get('pid');
 		const view = params.get('view');
 	
-		console.log(url + proj_id.replaceAll(' ', '+'));
-	
 		$.ajax({
     		type: "GET",
     		url: url + proj_id.replaceAll(' ', '+'),
@@ -120,14 +128,9 @@
     			}
     			document.getElementById('content').style.display = "block";
     			document.getElementById('loader').style.display = "none";
+    			getTeammates();
     			project_name = data['name'];
-    			document.getElementById('proj-name').innerHTML = project_name;
-    			if (view == "team") {
-    				getTeammates();
-    			} else {
-    				getTeammates();
-    				getTasks();
-    			}
+    			document.getElementById('proj-name').innerHTML = project_name.replaceAll("+", " ");
             },
             error: function(xhr, status, error) 
             {
@@ -150,12 +153,10 @@
     			document.getElementById('teammate-list').innerHTML = "";
     			teammates = data['list'];
     			for (var i = 0; i < teammates.length; i++) {
-    				document.getElementById('teammates').innerHTML += "<tr><td>" + teammates[i]['name'] + " ( <i style='color: red; cursor: pointer' class='fas fa-trash-alt' onclick='deleteTeammate(\"" + teammates[i]['name'] + "\");'></i> )</td><td id='" + teammates[i]['name'] + "-tasks'><div class='d-flex justify-content-left'><div class='spinner-border' role='status'><span class='visually-hidden'>Loading...</span></div></div></td><td id='" + teammates[i]['name'] + "-completed'><div class='d-flex justify-content-left'><div class='spinner-border' role='status'><span class='visually-hidden'>Loading...</span></div></div></td></tr>";
+    				document.getElementById('teammates').innerHTML += "<tr><td>" + teammates[i]['name'] + " ( <i style='color: red; cursor: pointer' class='fas fa-trash-alt' onclick='deleteTeammate(\"" + teammates[i]['name'] + "\");'></i> )</td><td id='" + teammates[i]['name'] + "-tasks'></td><td id='" + teammates[i]['name'] + "-completed'></td></tr>";
     				document.getElementById('teammate-list').innerHTML += "<tr><td>" + teammates[i]['name'] + "</td><td><i style='color: red; cursor: pointer' class='fas fa-trash-alt' onclick='deleteTeammate(\"" + teammates[i]['name'] + "\");'></i></td></tr>";
     			}
-    			if (view == "team") {
-    				getTasks();
-    			}
+    			getTasks();
             },
             error: function(xhr, status, error) 
             {
@@ -173,9 +174,27 @@
     		url: url + proj_id.replaceAll(' ', '+') + "/tasks",
     		success: function(data)
     		{
+    			document.getElementById('tasks').innerHTML = "";
     			tasks = data['list'];
     			for (var i = 0; i < tasks.length; i++) {
-    				document.getElementById('tasks').innerHTML += "<li>" + tasks[i]['name'] + "</li>";
+    				var assignees = "(" + tasks[i]['assignees'].join(", ") + ")";
+    				if (assignees == "()") {
+    					assignees = "";
+    				}
+    				var completeToggle = "<i class='far fa-square'></i>";
+    				if (tasks[i]['isComplete'] == 1) {
+    					completeToggle = '<i style="color: green" class="fas fa-check"></i>';
+    				}
+    				document.getElementById('tasks').innerHTML += "<tr><td>" + tasks[i]['name'] + " " + assignees + "</td><td><i class='fas fa-pen'></i></td><td><i class='fas fa-plus'></i></td><td><i style='cursor: pointer' class='fas fa-user-edit' onclick='assign(\"" + tasks[i]['name'] + "\");'></i></td><td>" + completeToggle + "</tr>";
+    				for (var j = 0; j < tasks[i]['assignees'].length; j++) {
+    					var lane = tasks[i]['assignees'][j] + "-tasks";
+    					var icon = "";
+    					if (tasks[i]['isComplete'] == 1) {
+    						lane = tasks[i]['assignees'][j] + "-completed";
+    						icon = '<i style="color: green" class="fas fa-check"></i> ';
+    					}
+    					document.getElementById(lane).innerHTML += "<p>" + icon + tasks[i]['name'] + "</p>";
+    				}
     			}
     			sortTasks();
     			// TODO: Add subdivide buttons
@@ -191,20 +210,24 @@
     	e.preventDefault(); // Don't just reload the page
     	
     	var form = $(this);
-    	var url = "https://s2vj3dtlfl.execute-api.us-east-1.amazonaws.com/alpha/project/" + document.getElementById("proj-name").innerHTML + "/teammates?name=" + document.getElementById("teammate").value;
+    	var url = "https://s2vj3dtlfl.execute-api.us-east-1.amazonaws.com/alpha/project/" + document.getElementById("proj-name").innerHTML.replaceAll(" ", "+") + "/teammates?name=" + document.getElementById("teammate").value;
     	
-    	console.log(url);
+    	document.getElementById('new-teammate-btn').innerHTML = "<span class='spinner-grow spinner-grow-sm' role='status' aria-hidden='true'></span> Please wait...";
+    	document.getElementById('new-teammate-btn').disabled = true;
+    	document.getElementById('teammate').disabled = true;
     	
     	$.ajax({
     		type: "POST",
     		url: url,
     		success: function(data)
     		{
-    			alert("Success");
     			window.location.reload();
             },
             error: function(xhr, status, error) 
             {
+            	document.getElementById('new-teammate-btn').innerHTML = "+ Add";
+    			document.getElementById('new-teammate-btn').disabled = false;
+    			document.getElementById('teammate').disabled = false;
             	console.log(xhr);
             	console.log(status);
             	console.log(error);
@@ -217,7 +240,7 @@
     	e.preventDefault(); // Don't just reload the page
     	
     	var form = $(this);
-    	var url = "https://s2vj3dtlfl.execute-api.us-east-1.amazonaws.com/alpha/project/" + document.getElementById("proj-name").innerHTML + "/teammates?name=" + document.getElementById("teammate-2").value;
+    	var url = "https://s2vj3dtlfl.execute-api.us-east-1.amazonaws.com/alpha/project/" + document.getElementById("proj-name").innerHTML.replaceAll(" ", "+") + "/teammates?name=" + document.getElementById("teammate-2").value;
     	
     	document.getElementById('teammate-add').innerHTML = "<span class='spinner-grow spinner-grow-sm' role='status' aria-hidden='true'></span> Please wait...";
     	document.getElementById('teammate-add').disabled = true;
@@ -244,7 +267,7 @@
     });
     
     function deleteTeammate(id) {
-    	var url = "https://s2vj3dtlfl.execute-api.us-east-1.amazonaws.com/alpha/teammate/" + id + "?pid=" + document.getElementById('proj-name').innerHTML;
+    	var url = "https://s2vj3dtlfl.execute-api.us-east-1.amazonaws.com/alpha/teammate/" + id + "?pid=" + document.getElementById('proj-name').innerHTML.replaceAll(" ", "+");
     	
     	document.getElementById('content').style.display = "none";
     	document.getElementById('loader').style.display = "block";
@@ -272,7 +295,7 @@
     	e.preventDefault(); // Don't just reload the page
     	
     	var form = $(this);
-    	var url = "https://s2vj3dtlfl.execute-api.us-east-1.amazonaws.com/alpha/project/" + document.getElementById("proj-name").innerHTML + "/tasks?name=" + document.getElementById('task').value;
+    	var url = "https://s2vj3dtlfl.execute-api.us-east-1.amazonaws.com/alpha/project/" + document.getElementById("proj-name").innerHTML.replaceAll(" ", "+") + "/tasks?name=" + document.getElementById('task').value;
     	
     	document.getElementById('new-task-btn').innerHTML = "<span class='spinner-grow spinner-grow-sm' role='status' aria-hidden='true'></span> Please wait...";
     	document.getElementById('task').disabled = true;
@@ -306,19 +329,19 @@
 
   		while (!done) {
     		done = true;
-    		var elements = list.getElementsByTagName("li");
+    		var rows = list.rows;
     		
-    		for (var i = 0; i < (elements.length - 1); i++) {
+    		for (var i = 0; i < (rows.length - 1); i++) {
 				var shouldSwitch = false;
 
-      			if (elements[i].innerHTML > elements[i + 1].innerHTML) {
+      			if (rows[i].getElementsByTagName("td")[0].innerHTML > rows[i + 1].getElementsByTagName("td")[0].innerHTML) {
 					shouldSwitch = true;
 					break;
       			}
     		}
     		
     		if (shouldSwitch) {
-      			elements[i].parentNode.insertBefore(elements[i + 1], elements[i]);
+      			rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
       			done = false;
     		}
   		}
@@ -332,6 +355,37 @@
     function teamView() {
 		document.getElementById('projView').style.display = "none";
 		document.getElementById('teamView').style.display = "block";
+	}
+	
+	function assign(task_id) {
+		const params = new URLSearchParams(window.location.search);
+		const proj_id = params.get('pid');
+	
+		var user = prompt("Enter the name of a user you would like to assign this task to (or unassign if already assigned):");
+		if (user) {
+			var url = "https://s2vj3dtlfl.execute-api.us-east-1.amazonaws.com/alpha/task/" + encodeURIComponent(task_id) + "/assign?teammate=" + user + "&project=" + proj_id.replaceAll(" ", "%2B").replaceAll("'", "%27");
+			
+			document.getElementById('loader').style.display = "block";
+            document.getElementById('content').style.display = "none";
+		
+			$.ajax({
+    		type: "POST",
+    		url: url,
+    		success: function(data)
+    		{
+    			window.location.reload();
+            },
+            error: function(xhr, status, error) 
+            {
+            	document.getElementById('loader').style.display = "none";
+            	document.getElementById('content').style.display = "block";
+            	console.log(xhr);
+            	console.log(status);
+            	console.log(error);
+            	alert(error.Message);
+            }
+        });
+		}
 	}
     
     window.onload = load;

@@ -50,6 +50,24 @@
 				</button>
 			</form>
 		</div>
+		<div class="col-md-8 mt-3">
+			<div id="task-loader" style="padding-top: 30vh; display: none">
+				<h3 class="mt-4 text-center">Loading...</h3>
+				<div class="d-flex justify-content-center mt-4">
+					<div class="spinner-grow" role="status">
+						<span class="visually-hidden">Loading...</span>
+					</div>
+				</div>
+			</div>
+			<div id="task-view">
+				<h3 class="h5 mt-4">Project Summary</h3>
+				<p id="intro">Select a project...</p>
+				<table class="table">
+					<tbody id="tasks">
+					</tbody>
+				</table>
+			</div>
+		</div>
 	</div>
 	<script>
 	var url = "https://s2vj3dtlfl.execute-api.us-east-1.amazonaws.com/alpha/project"
@@ -60,14 +78,14 @@
     		url: url,
     		success: function(data)
     		{
-    			document.getElementById('content').style.display = "block";
+    			document.getElementById('content').style.display = "flex";
     			document.getElementById('loader').style.display = "none";
     			projects = data['list'];
     			for (var i = 0; i < projects.length; i++) {
     				if (projects[i]['isArchived'] == 0) {
-    					document.getElementById('ActiveProjects').innerHTML += "<tr><td>" + projects[i]['name'] + "</td><td>" + "0%" + "</td></tr>";
+    					document.getElementById('ActiveProjects').innerHTML += "<tr style='cursor: pointer' onclick='loadProject(\"" + projects[i]['name'].replaceAll("'", "%2B") + "\");'><td>" + projects[i]['name'].replaceAll("+", " ") + "</td><td>" + "0%" + "</td></tr>";
     				}else{
-    					document.getElementById('ArchivedProjects').innerHTML += "<tr><td>" + projects[i]['name'] + "</td></tr>";
+    					document.getElementById('ArchivedProjects').innerHTML += "<tr><td>" + projects[i]['name'].replaceAll("+", " ") + "</td></tr>";
     				}
     			}
             },
@@ -100,7 +118,7 @@
             error: function(xhr, status, error) 
             {
             	document.getElementById('Delete').style.display = "inline-block";
-    		document.getElementById('Delete-loading').style.display = "none";
+    			document.getElementById('Delete-loading').style.display = "none";
             	document.getElementById('pid').disabled = false;
             	console.log(xhr);
             	console.log(status);
@@ -109,6 +127,69 @@
             }
         });
     });
+    
+    function loadProject(proj_id) {
+    	proj_id = proj_id.replaceAll("%2B", "'");
+    
+    	var url = "https://s2vj3dtlfl.execute-api.us-east-1.amazonaws.com/alpha/project/" + proj_id.replaceAll(" ", "+") + "/tasks";
+    	
+    	document.getElementById('task-loader').style.display = "block";
+    	document.getElementById('task-view').style.display = "none";
+    	document.getElementById('intro').style.display = "none";
+    	document.getElementById('tasks').innerHTML = "";
+    	
+    	$.ajax({
+    		type: "GET",
+    		url: url,
+    		success: function(data)
+    		{
+    			document.getElementById('task-view').style.display = "block";
+    			document.getElementById('task-loader').style.display = "none";
+    			tasks = data['list'];
+    			for (var i = 0; i < tasks.length; i++) {
+    				var assignees = "(" + tasks[i]['assignees'].join(", ") + ")";
+    				if (assignees == "()") {
+    					assignees = "";
+    				}
+    				var completeToggle = "In Progress";
+    				if (tasks[i]['isComplete'] == 1) {
+    					completeToggle = '<i style="color: green" class="fas fa-check"></i>';
+    				}
+    				document.getElementById('tasks').innerHTML += "<tr><td>" + tasks[i]['name'] + " " + assignees + "</td><td>" + completeToggle + "</tr>";
+    				sortTasks();
+    			}
+            },
+            error: function(xhr, status, error) 
+            {
+            	document.getElementById('task-loader').style.display = "none";
+            	alert(xhr.responseJSON['message']);
+            }
+        });
+    }
+    
+     function sortTasks() {
+    	var list = document.getElementById("tasks");
+    	var done = false;
+
+  		while (!done) {
+    		done = true;
+    		var rows = list.rows;
+    		
+    		for (var i = 0; i < (rows.length - 1); i++) {
+				var shouldSwitch = false;
+
+      			if (rows[i].getElementsByTagName("td")[0].innerHTML > rows[i + 1].getElementsByTagName("td")[0].innerHTML) {
+					shouldSwitch = true;
+					break;
+      			}
+    		}
+    		
+    		if (shouldSwitch) {
+      			rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+      			done = false;
+    		}
+  		}
+	}
     
     window.onload = load;
     </script>
