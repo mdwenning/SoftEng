@@ -11,14 +11,8 @@ public class CreateProjectTest extends LambdaTest{
     @Test
     public void testCreateProject(){
         try {
-            try{
-                deleteProjectRequest dpr = new deleteProjectRequest("testProjectCreate");
-                deleteProjectResponse respD = new deleteProjectHandler().handleRequest(dpr, createContext("delete"));
-
-            }
-            catch (Exception e){
-                System.out.println("CreateProjectTest - Project Doesn't Exist - Continue: " + e.getMessage());
-            }
+            deleteProjectRequest dpr = new deleteProjectRequest("testProjectCreate");
+            deleteProjectResponse respD = new deleteProjectHandler().handleRequest(dpr, createContext("create"));
 
             createProjectRequest cpr = new createProjectRequest("testProjectCreate");
             createProjectResponse resp = new createProjectHandler().handleRequest(cpr, createContext("create"));

@@ -9,16 +9,15 @@ public class addAssignmentTest extends LambdaTest{
     public void testAddAssignment(){
         try{
             deleteProjectRequest dpr = new deleteProjectRequest("testProjectAssign");
-            deleteProjectResponse respD = new deleteProjectHandler().handleRequest(dpr, createContext("delete"));
+            deleteProjectResponse respD = new deleteProjectHandler().handleRequest(dpr, createContext("create"));
 
             createProjectRequest cpr = new createProjectRequest("testProjectAssign");
             createProjectResponse respC = new createProjectHandler().handleRequest(cpr, createContext("create"));
 
             addTaskRequest atr1 = new addTaskRequest("assignTestTask1","testProjectAssign");
             addTaskResponse atrsp1 = new addTaskHandler().handleRequest(atr1, createContext("create"));
-
             addTaskRequest atr2 = new addTaskRequest("assignTestTask2","testProjectAssign");
-            addTaskResponse atrsp2 = new addTaskHandler().handleRequest(atr1, createContext("create"));
+            addTaskResponse atrsp2 = new addTaskHandler().handleRequest(atr2, createContext("create"));
 
             addTeammateRequest atmr1 = new addTeammateRequest("assignTestTeammate", "testProjectAssign");
             addTeammateResponse respT1 = new addTeammateHandler().handleRequest(atmr1, createContext("create"));
@@ -41,6 +40,10 @@ public class addAssignmentTest extends LambdaTest{
             Assert.assertEquals(ar1.getName(), "assignTestTeammate-set");
             Assert.assertEquals(ar1.getProjectName(), "testProjectAssign-set");
             Assert.assertEquals(ar1.getidTask(), "1234-testID");
+
+            assignResponse arErr = new assignResponse("err", 400);
+            Assert.assertEquals("err", arErr.error);
+            Assert.assertEquals(400, arErr.httpCode);
         }
         catch (Exception e){
             e.printStackTrace();
