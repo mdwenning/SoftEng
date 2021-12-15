@@ -25,6 +25,8 @@ public class DeleteProjectTest extends LambdaTest{
             addTeammateRequest atmr2 = new addTeammateRequest("testTeammate2", "testProjectDelete");
             addTeammateResponse respT2 = new addTeammateHandler().handleRequest(atmr2, createContext("create"));
 
+
+
             assignRequest ar1 = new assignRequest("testTeammate1", "testProjectDelete", atrsp1.getTaskID());
             assignResponse assignresp1 = new assignmentHandler().handleRequest(ar1, createContext("create"));
             assignRequest ar2 = new assignRequest("testTeammate2", "testProjectDelete", atrsp2.getTaskID());
@@ -36,7 +38,18 @@ public class DeleteProjectTest extends LambdaTest{
 
             deleteProjectRequest dpr = new deleteProjectRequest("testProjectDelete");
             deleteProjectResponse resp = new deleteProjectHandler().handleRequest(dpr, createContext("create"));
-            //Assert.assertEquals(200, resp.statusCode);
+            Assert.assertEquals(200, resp.statusCode);
+
+            Assert.assertEquals("testProjectDelete", dpr.getName());
+            Assert.assertEquals("Delete(testProjectDelete)", dpr.toString());
+
+            dpr.setName("testProjectDelete-set");
+            Assert.assertEquals("testProjectDelete-set", dpr.getName());
+
+            deleteProjectResponse respErrTest = new deleteProjectResponse("delTestProj", 200, "errorMsg");
+            Assert.assertEquals("delTestProj", respErrTest.name);
+            Assert.assertEquals(200, respErrTest.statusCode);
+            Assert.assertEquals("errorMsg", respErrTest.error);
         }
         catch (Exception e){
             e.printStackTrace();
