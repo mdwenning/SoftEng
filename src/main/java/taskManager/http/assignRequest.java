@@ -1,19 +1,19 @@
 package taskManager.http;
 
 public class assignRequest {
-    public String name;
+    public String teammateName;
     public String projectName;
     public String idTask;
 
-    public String getName(){return name;}
-    public void setName(String idTeammate){this.projectName = projectName;}
-    public String getProjectName(){return name;}
-    public void setProjectName(String idTeammate){this.projectName = projectName;}
+    public String getName(){return teammateName;}
+    public void setName(String tmName){this.teammateName = tmName;}
+    public String getProjectName(){return projectName;}
+    public void setProjectName(String projName){this.projectName = projName;}
     public String getidTask(){return idTask;}
     public void setidTask(String idTask){this.idTask = idTask;}
 
-    public assignRequest(String name, String projectName, String idTask){
-        this.name = name;
+    public assignRequest(String teammateName, String projectName, String idTask){
+        this.teammateName = teammateName;
         this.projectName = projectName;
         this.idTask = idTask;
 

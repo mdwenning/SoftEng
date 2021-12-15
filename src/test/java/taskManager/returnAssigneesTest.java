@@ -11,6 +11,6 @@ public class returnAssigneesTest extends LambdaTest{
     public void returnAssignees(){
         listTasksRequest ltr = new listTasksRequest("tp3");
         listTasksResponse resp = new listTasksHandler().handleRequest(ltr, createContext("create"));
-        Assert.assertEquals(403, resp.statusCode);
+        Assert.assertEquals(200, resp.statusCode);
     }
 }

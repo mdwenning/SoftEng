@@ -39,6 +39,17 @@ public class DeleteProjectTest extends LambdaTest{
             deleteProjectRequest dpr = new deleteProjectRequest("testProjectDelete");
             deleteProjectResponse resp = new deleteProjectHandler().handleRequest(dpr, createContext("create"));
             Assert.assertEquals(200, resp.statusCode);
+
+            Assert.assertEquals("testProjectDelete", dpr.getName());
+            Assert.assertEquals("Delete(testProjectDelete)", dpr.toString());
+
+            dpr.setName("testProjectDelete-set");
+            Assert.assertEquals("testProjectDelete-set", dpr.getName());
+
+            deleteProjectResponse respErrTest = new deleteProjectResponse("delTestProj", 200, "errorMsg");
+            Assert.assertEquals("delTestProj", respErrTest.name);
+            Assert.assertEquals(200, respErrTest.statusCode);
+            Assert.assertEquals("errorMsg", respErrTest.error);
         }
         catch (Exception e){
             e.printStackTrace();

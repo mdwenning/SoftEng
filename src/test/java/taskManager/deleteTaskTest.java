@@ -8,9 +8,20 @@ public class deleteTaskTest extends LambdaTest{
     @Test
     public void testDeleteTask(){
         try {
-            deleteTaskRequest dpr = new deleteTaskRequest("f55b8f91-4af4-46f0-981e-fb8681448a74");
+            createProjectRequest cpr = new createProjectRequest("testTaskDelete");
+            createProjectResponse respC = new createProjectHandler().handleRequest(cpr, createContext("create"));
+
+            addTaskRequest atr1 = new addTaskRequest("testTaskDelete1","testTaskDelete");
+            addTaskResponse atrsp1 = new addTaskHandler().handleRequest(atr1, createContext("create"));
+
+            deleteTaskRequest dpr = new deleteTaskRequest(atrsp1.getTaskID());
             deleteTaskResponse resp = new deleteTaskHandler().handleRequest(dpr, createContext("delete"));
             Assert.assertEquals(200, resp.statusCode);
+
+            deleteTaskResponse respErrTest = new deleteTaskResponse("delTaskTst", 200, "errorMsg");
+            Assert.assertEquals("delTaskTst", respErrTest.name);
+            Assert.assertEquals(200, respErrTest.statusCode);
+            Assert.assertEquals("errorMsg", respErrTest.error);
         }
         catch (Exception e){
             e.printStackTrace();

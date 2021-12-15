@@ -13,6 +13,6 @@ public class deleteTeammateRequest {
     }
     public deleteTeammateRequest(){};
     public String toString() {
-        return "Delete(" + name + " " + projectName + ")";
+        return "Delete(" + name + ": " + projectName + ")";
     }
 }

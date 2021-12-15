@@ -18,7 +18,7 @@ public class listTeammatesHandler implements RequestHandler<listTeammatesRequest
     public listTeammatesResponse handleRequest(listTeammatesRequest req, Context context){
         listTeammatesResponse response;
         try{
-           List<Teammate> list = getTeammates(req.name);
+           List<Teammate> list = getTeammates(req.projName);
            response = new listTeammatesResponse(list, 200);
         }
         catch(Exception e){

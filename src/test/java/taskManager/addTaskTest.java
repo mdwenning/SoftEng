@@ -30,6 +30,9 @@ public class addTaskTest extends LambdaTest{
             atr.setprojectName("testProjectTask - set");
             Assert.assertEquals(atr.getprojectName(), "testProjectTask - set");
 
+            addTaskResponse atrspErrTest = new addTaskResponse("Error test", resp.statusCode);
+            Assert.assertEquals(atrspErrTest.error, "Error test");
+            Assert.assertEquals(resp.statusCode, atrspErrTest.httpCode);
 
         }
         catch (Exception e){

@@ -18,5 +18,5 @@ public class addTeammateResponse {
         this.name = "";
         this.projectName = "";
     }
-    public String toString(){return "Response("+name+projectName+")";}
+    public String toString(){return "Response("+name+": "+projectName+")";}
 }

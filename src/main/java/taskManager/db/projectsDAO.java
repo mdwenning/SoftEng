@@ -308,6 +308,19 @@ public class projectsDAO {
         }
     }
 
+    public void deleteAllProjects() throws Exception {
+        try{
+            List<Project> projects = getAllProjects();
+            for(Project proj: projects){
+                deleteProject(proj.name);
+            }
+        }
+        catch (Exception e) {
+            throw new Exception("Failed to delete all projects: " + e.getMessage());
+        }
+
+    }
+
     public boolean addTask(Task task) throws Exception{
         try{
             PreparedStatement ps = conn.prepareStatement("SELECT * FROM " + "sys.Task" + " WHERE (name, idProject) = (?,?);");
