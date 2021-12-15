@@ -6,9 +6,9 @@ public class assignRequest {
     public String idTask;
 
     public String getName(){return name;}
-    public void setName(String idTeammate){this.projectName = projectName;}
-    public String getProjectName(){return name;}
-    public void setProjectName(String idTeammate){this.projectName = projectName;}
+    public void setName(String name){this.name = name;}
+    public String getprojectName(){return projectName;}
+    public void setprojectName(String projectName){this.projectName = projectName;}
     public String getidTask(){return idTask;}
     public void setidTask(String idTask){this.idTask = idTask;}
 
@@ -18,6 +18,5 @@ public class assignRequest {
         this.idTask = idTask;
 
     }
-
     public assignRequest(){}
 }
