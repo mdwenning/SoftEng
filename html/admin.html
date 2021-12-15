@@ -39,16 +39,12 @@
 			</table>
 			<br>
 			<hr>
-			<form id="update-project">
+			<div>
 				<input type="text" id="pid" placeholder="Enter project ID" class="form-control">
 				<br>
-				<input type="button" value="Archive" id="Archive" class="btn btn-warning">
-				<input type="submit" value="Delete" id="Delete" class="btn btn-danger">
-				<button class="btn btn-danger" id="Delete-loading" style="display: none" disabled>
-  					<span class="spinner-grow spinner-grow-sm" role="status" aria-hidden="true"></span>
-  					Deleting...
-				</button>
-			</form>
+				<button id="Archive" onclick="archive();" class="btn btn-warning">Archive</button>
+				<button id="Delete" onclick="deleteProject();" class="btn btn-danger">Delete</button>
+			</div>
 		</div>
 		<div class="col-md-8 mt-3">
 			<div id="task-loader" style="padding-top: 30vh; display: none">
@@ -99,14 +95,12 @@
         });
 	}
 	
-	$("#update-project").submit(function(e) {
-    	e.preventDefault(); // Don't just reload the page
-    	
-    	var form = $(this);
+	function deleteProject() {
     	var url = "https://s2vj3dtlfl.execute-api.us-east-1.amazonaws.com/alpha/project/" + document.getElementById("pid").value + "/delete";
-    	document.getElementById('Delete').style.display = "none";
-    	document.getElementById('Delete-loading').style.display = "inline-block";
+    	document.getElementById('Delete').innerHTML = "<span class='spinner-grow spinner-grow-sm' role='status' aria-hidden='true'></span> Please wait...";
     	document.getElementById('pid').disabled = true;
+    	document.getElementById('Delete').disabled = true;
+    	document.getElementById('Archive').disabled = true;
     	
     	$.ajax({
     		type: "POST",
@@ -117,16 +111,45 @@
             },
             error: function(xhr, status, error) 
             {
-            	document.getElementById('Delete').style.display = "inline-block";
-    			document.getElementById('Delete-loading').style.display = "none";
-            	document.getElementById('pid').disabled = false;
+            	document.getElementById('Delete').innerHTML = "Delete";
+    			document.getElementById('pid').disabled = false;
+    			document.getElementById('Delete').disabled = false;
+    			document.getElementById('Archive').disabled = false;
             	console.log(xhr);
             	console.log(status);
             	console.log(error);
             	alert("An error occurred. Please check the console for more information.");
             }
         });
-    });
+    }
+    
+    function archive() {
+    	var url = "https://s2vj3dtlfl.execute-api.us-east-1.amazonaws.com/alpha/project/" + document.getElementById("pid").value;
+    	document.getElementById('Archive').innerHTML = "<span class='spinner-grow spinner-grow-sm' role='status' aria-hidden='true'></span> Please wait...";
+    	document.getElementById('pid').disabled = true;
+    	document.getElementById('Archive').disabled = true;
+    	document.getElementById('Delete').disabled = true;
+    	
+    	$.ajax({
+    		type: "POST",
+    		url: url,
+    		success: function(data)
+    		{
+    			window.location.reload();
+            },
+            error: function(xhr, status, error) 
+            {
+            	document.getElementById('Archive').innerHTML = "Archive";
+    			document.getElementById('pid').disabled = false;
+    			document.getElementById('Archive').disabled = false;
+    			document.getElementById('Delete').disabled = false;
+            	console.log(xhr);
+            	console.log(status);
+            	console.log(error);
+            	alert("An error occurred. Please check the console for more information.");
+            }
+        });
+    }
     
     function loadProject(proj_id) {
     	proj_id = proj_id.replaceAll("%2B", "'");

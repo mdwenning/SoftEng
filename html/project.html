@@ -19,7 +19,7 @@
 		</div>
 	</nav>
 	<div id="loader" style="padding-top: 30vh">
-		<h3 class="mt-4 text-center">Loading...</h3>
+		<h3 class="mt-4 text-center" id="load-message">Loading...</h3>
 		<div class="d-flex justify-content-center mt-4">
 			<div class="spinner-grow" role="status">
 				<span class="visually-hidden">Loading...</span>
@@ -108,12 +108,23 @@
 	</div>
 
     <script>
-    var url = "https://s2vj3dtlfl.execute-api.us-east-1.amazonaws.com/alpha/project/"
+    var url = "https://s2vj3dtlfl.execute-api.us-east-1.amazonaws.com/alpha/project/";
+    const loading_messages = [
+    	"Please wait...it's what you agreed to in the Terms and Conditions",
+    	"Working...unlike you",
+    	"Waking up the hamsters...",
+    	"Getting coffee...one sec",
+    	"Calculating all the digits of &pi;...",
+    	"Counting to infinity...",
+    	"Mining for cryptocurrencies...",
+    ];
 	
 	function load() {
 		const params = new URLSearchParams(window.location.search);
 		const proj_id = params.get('pid');
 		const view = params.get('view');
+		
+		document.getElementById('load-message').innerHTML = loading_messages[Math.floor(Math.random()*loading_messages.length)];
 	
 		$.ajax({
     		type: "GET",
@@ -121,7 +132,7 @@
     		success: function(data)
     		{
     			if (data['statusCode'] == 403) {
-    				document.getElementById('content').innerHTML = "<h3 class='mt-4'>" + data['error'] + "</h3>";
+    				document.getElementById('content').innerHTML = "<a href='index.html' class='btn btn-primary mt-3' style='float: right'>+ New Project</a><h3 class='mt-4'>" + data['error'] + "</h3>";
     				document.getElementById('content').style.display = "block";
     				document.getElementById('loader').style.display = "none";
     				return;
@@ -181,11 +192,11 @@
     				if (assignees == "()") {
     					assignees = "";
     				}
-    				var completeToggle = "<i class='far fa-square'></i>";
+    				var completeToggle = '<i class="far fa-square" style="cursor: pointer" onclick="markComplete(\'' + tasks[i]['idTask'] + '\');"></i>';
     				if (tasks[i]['isComplete'] == 1) {
-    					completeToggle = '<i style="color: green" class="fas fa-check"></i>';
+    					completeToggle = '<i style="color: green; cursor: pointer" class="fas fa-check" onclick="markComplete(\'' + tasks[i]['idTask'] + '\');"></i>';
     				}
-    				document.getElementById('tasks').innerHTML += "<tr><td>" + tasks[i]['name'] + " " + assignees + "</td><td><i class='fas fa-pen'></i></td><td><i class='fas fa-plus'></i></td><td><i style='cursor: pointer' class='fas fa-user-edit' onclick='assign(\"" + tasks[i]['name'] + "\");'></i></td><td>" + completeToggle + "</tr>";
+    				document.getElementById('tasks').innerHTML += "<tr><td>" + tasks[i]['name'] + " " + assignees + "</td><td><i style='cursor: pointer' class='fas fa-pen' onclick='editTask(\"" + tasks[i]['idTask'] + "\");'></i></td><td><i class='fas fa-plus'></i></td><td><i style='cursor: pointer' class='fas fa-user-edit' onclick='assign(\"" + tasks[i]['idTask'] + "\");'></i></td><td>" + completeToggle + "</tr>";
     				for (var j = 0; j < tasks[i]['assignees'].length; j++) {
     					var lane = tasks[i]['assignees'][j] + "-tasks";
     					var icon = "";
@@ -197,7 +208,6 @@
     				}
     			}
     			sortTasks();
-    			// TODO: Add subdivide buttons
             },
             error: function(xhr, status, error) 
             {
@@ -363,28 +373,84 @@
 	
 		var user = prompt("Enter the name of a user you would like to assign this task to (or unassign if already assigned):");
 		if (user) {
-			var url = "https://s2vj3dtlfl.execute-api.us-east-1.amazonaws.com/alpha/task/" + encodeURIComponent(task_id) + "/assign?teammate=" + user + "&project=" + proj_id.replaceAll(" ", "%2B").replaceAll("'", "%27");
+			var url = "https://s2vj3dtlfl.execute-api.us-east-1.amazonaws.com/alpha/task/" + task_id + "/assign?teammate=" + user + "&project=" + proj_id.replaceAll(" ", "%2B").replaceAll("'", "%27");
+			
+			console.log(url);
 			
 			document.getElementById('loader').style.display = "block";
             document.getElementById('content').style.display = "none";
 		
 			$.ajax({
-    		type: "POST",
-    		url: url,
-    		success: function(data)
-    		{
-    			window.location.reload();
-            },
-            error: function(xhr, status, error) 
-            {
-            	document.getElementById('loader').style.display = "none";
-            	document.getElementById('content').style.display = "block";
-            	console.log(xhr);
-            	console.log(status);
-            	console.log(error);
-            	alert(error.Message);
-            }
-        });
+				type: "POST",
+				url: url,
+				success: function(data)
+				{
+					window.location.reload();
+				},
+				error: function(xhr, status, error) 
+				{
+					document.getElementById('loader').style.display = "none";
+					document.getElementById('content').style.display = "block";
+					console.log(xhr);
+					console.log(status);
+					console.log(error);
+					alert(error.Message);
+				}
+			});
+		}
+	}
+	
+	function markComplete(task_id) {
+		var url = "https://s2vj3dtlfl.execute-api.us-east-1.amazonaws.com/alpha/task/" + task_id + "/status";
+		
+		document.getElementById('loader').style.display = "block";
+		document.getElementById('content').style.display = "none";
+		
+		$.ajax({
+			type: "POST",
+			url: url,
+			success: function(data)
+			{
+				window.location.reload();
+			},
+			error: function(xhr, status, error)
+			{
+				document.getElementById('loader').style.display = "none";
+				document.getElementById('content').style.display = "block";
+				console.log(xhr);
+				console.log(status);
+				console.log(error);
+				alert(error.Message);
+			}
+		});
+	}
+	
+	function editTask(task_id) {
+		var new_name = prompt("Enter a new name for this task:");
+		
+		if (new_name) {
+			var url = "https://s2vj3dtlfl.execute-api.us-east-1.amazonaws.com/alpha/task/" + task_id + "?name=" + encodeURIComponent(new_name);
+		
+			document.getElementById('loader').style.display = "block";
+			document.getElementById('content').style.display = "none";
+		
+			$.ajax({
+				type: "POST",
+				url: url,
+				success: function(data)
+				{
+					window.location.reload();
+				},
+				error: function(xhr, status, error)
+				{
+					document.getElementById('loader').style.display = "none";
+					document.getElementById('content').style.display = "block";
+					console.log(xhr);
+					console.log(status);
+					console.log(error);
+					alert(error.Message);
+				}
+			});
 		}
 	}
     
