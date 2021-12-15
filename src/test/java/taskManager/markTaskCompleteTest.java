@@ -41,6 +41,8 @@ public class markTaskCompleteTest extends LambdaTest{
             Assert.assertEquals("err", arErr.error);
             Assert.assertEquals(400, arErr.statusCode);
 
+            markTaskCompleteRequest mtcrqConstructorTest = new markTaskCompleteRequest();
+
         }
         catch (Exception e){
             e.printStackTrace();

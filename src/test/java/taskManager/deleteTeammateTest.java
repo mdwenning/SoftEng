@@ -35,6 +35,8 @@ public class deleteTeammateTest extends LambdaTest{
             Assert.assertEquals(dtrspErrTest.projectName, "testProjDel");
             Assert.assertEquals(200, dtrspErrTest.statusCode);
             Assert.assertEquals(dtrspErrTest.error, "Error test");
+
+            deleteTeammateRequest dtmrqConstructorTest = new deleteTeammateRequest();
         }
         catch (Exception e){
             e.printStackTrace();

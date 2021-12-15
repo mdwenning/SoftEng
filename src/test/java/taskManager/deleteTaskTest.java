@@ -8,6 +8,9 @@ public class deleteTaskTest extends LambdaTest{
     @Test
     public void testDeleteTask(){
         try {
+            deleteProjectRequest dprD = new deleteProjectRequest("testTaskDelete");
+            deleteProjectResponse respD = new deleteProjectHandler().handleRequest(dprD, createContext("create"));
+
             createProjectRequest cpr = new createProjectRequest("testTaskDelete");
             createProjectResponse respC = new createProjectHandler().handleRequest(cpr, createContext("create"));
 

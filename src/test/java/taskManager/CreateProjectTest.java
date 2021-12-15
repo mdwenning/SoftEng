@@ -2,10 +2,7 @@ package taskManager;
 import java.io.IOException;
 import org.junit.Assert;
 import org.junit.Test;
-import taskManager.http.createProjectRequest;
-import taskManager.http.createProjectResponse;
-import taskManager.http.deleteProjectRequest;
-import taskManager.http.deleteProjectResponse;
+import taskManager.http.*;
 
 public class CreateProjectTest extends LambdaTest{
     @Test
@@ -26,6 +23,8 @@ public class CreateProjectTest extends LambdaTest{
             createProjectResponse respErr = new createProjectResponse("createProjErrTst", 400);
             Assert.assertEquals(400, respErr.httpCode);
             Assert.assertEquals("createProjErrTst", respErr.name);
+
+            createProjectRequest cprqConstructorTest = new createProjectRequest();
         }
         catch (Exception e){
             e.printStackTrace();

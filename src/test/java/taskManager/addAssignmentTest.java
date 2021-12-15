@@ -44,6 +44,8 @@ public class addAssignmentTest extends LambdaTest{
             assignResponse arErr = new assignResponse("err", 400);
             Assert.assertEquals("err", arErr.error);
             Assert.assertEquals(400, arErr.httpCode);
+
+            assignRequest asrqConstructorTest = new assignRequest();
         }
         catch (Exception e){
             e.printStackTrace();

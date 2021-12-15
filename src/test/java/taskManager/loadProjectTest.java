@@ -38,6 +38,8 @@ public class loadProjectTest extends LambdaTest{
             loadProjectResponse arErr = new loadProjectResponse(400, "err");
             Assert.assertEquals("err", arErr.error);
             Assert.assertEquals(400, arErr.statusCode);
+
+            loadProjectRequest lprqConstructorTest = new loadProjectRequest();
         }
         catch (Exception e){
             e.printStackTrace();
