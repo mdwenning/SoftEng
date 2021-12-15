@@ -593,7 +593,7 @@ public class projectsDAO {
 
             String tempName = parent.name;
             String[] arr = tempName.split(":", 2);
-            tempName = arr[0] + sequence + ": " + name;
+            tempName = arr[0] + "." + sequence + ": " + name;
 
             Task task = new Task(tempName, getProject(projectName).idProject, idParent, sequence);
             updateAssignment(idParent, task.idTask);
@@ -609,6 +609,36 @@ public class projectsDAO {
 
             return true;
         }
+        catch(Exception e){
+            throw new Exception("Failed to decompose: " + e.getMessage());
+        }
+    }
+
+    public String getPerc(String projectName) throws Exception{
+        try{
+            List<Task> allTasks = getAllTasks(projectName);
+            List<Task> bottomTasks = new ArrayList<>();
+            for(Task task : allTasks){
+                boolean isParent = false;
+                for(Task child : allTasks){
+                    if(Objects.equals(child.idParent, task.idTask)){
+                        isParent = true;
+                    }
+                }
+                if(!isParent){
+                    bottomTasks.add(task);
+                }
+            }
+            int completed = 0;
+            for(Task task : bottomTasks){
+                if (task.isComplete == 1){
+                    completed += 1;
+                }
+            }
+            double perc = ((double)(completed) / bottomTasks.size()) *100.00;
+            return "" + perc + "%";
+        }
+
         catch(Exception e){
             throw new Exception("Failed to decompose: " + e.getMessage());
         }
