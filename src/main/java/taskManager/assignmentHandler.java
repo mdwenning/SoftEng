@@ -24,8 +24,8 @@ public class assignmentHandler implements RequestHandler<assignRequest, assignRe
     public assignResponse handleRequest(assignRequest req, Context context){
         assignResponse response;
         try{
-            toggleAssignment(req.teammateName, req.projectName, req.idTask);
-            response = new assignResponse(req.teammateName, req.idTask, 200);
+            toggleAssignment(req.name, req.projectName, req.idTask);
+            response = new assignResponse(req.name, req.idTask, 200);
 
         }
         catch(Exception e){
