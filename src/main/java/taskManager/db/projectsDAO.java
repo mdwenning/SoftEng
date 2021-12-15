@@ -5,6 +5,7 @@ import taskManager.model.Project;
 import taskManager.model.Task;
 import taskManager.model.Teammate;
 
+import javax.xml.crypto.dsig.spec.ExcC14NParameterSpec;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
@@ -331,6 +332,24 @@ public class projectsDAO {
         }
     }
 
+    public boolean renameTask(String idTask, String newName) throws Exception{
+        try{
+            Task task = getTask(idTask);
+            String tempName = task.name;
+            String[] arr = tempName.split(" ", 2);
+            tempName = arr[0] + " " + newName;
+
+            PreparedStatement ps = conn.prepareStatement("UPDATE sys.Task SET name = ? WHERE idTask=?;");
+            ps.setString(1, tempName);
+            ps.setString(2, idTask);
+            ps.execute();
+            return true;
+        }
+        catch(Exception e){
+            throw new Exception("Failed to rename task: " + e.getMessage());
+        }
+    }
+
     public boolean deleteTask(Task task) throws Exception{
         try{
             PreparedStatement ps = conn.prepareStatement("DELETE FROM sys.Task WHERE idTask = ?;");
@@ -413,6 +432,7 @@ public class projectsDAO {
     }
 
     public boolean checkAssignment(Assignment assignment) throws Exception{
+        //This code wouldn't need to exist if I had made a getAssignment function...oh well
         try {
             Assignment a = null;
             PreparedStatement ps = conn.prepareStatement("SELECT * FROM " + "sys.Assignments" + " WHERE (idTask, idTeammate, idProject)=(?,?,?);");
@@ -453,6 +473,7 @@ public class projectsDAO {
             throw new Exception("Failed to delete assignment: " + e.getMessage());
         }
     }
+
     public boolean deleteAssignment(String idTeammate, String idProject) throws Exception{
         try{
             PreparedStatement ps = conn.prepareStatement("DELETE FROM sys.Assignments WHERE (idTeammate, idProject)=(?,?);");
@@ -464,6 +485,47 @@ public class projectsDAO {
         }
         catch(Exception e){
             throw new Exception("Failed to delete assignment: " + e.getMessage());
+        }
+    }
+
+    public boolean toggleComplete(String idTask) throws Exception{
+        try {
+            if(getTask(idTask).isComplete == 0) {
+                PreparedStatement ps = conn.prepareStatement("UPDATE sys.Task SET isComplete = 1 WHERE idTask=?;");
+                ps.setString(1, idTask);
+                ps.execute();
+                return true;
+            }
+            else{
+                PreparedStatement ps = conn.prepareStatement("UPDATE sys.Task SET isComplete = 0 WHERE idTask=?;");
+                ps.setString(1, idTask);
+                ps.execute();
+                return true;
+            }
+        }
+        catch(Exception e){
+            throw new Exception("Failed to mark complete: " + e.getMessage());
+        }
+    }
+
+    public boolean toggleArchived(String projectName) throws Exception{
+        try{
+            Project proj = getProject(projectName);
+            if(proj.isArchived == 0) {
+                PreparedStatement ps = conn.prepareStatement("UPDATE sys.Project SET isArchived = 1 WHERE idProject=?;");
+                ps.setString(1, proj.idProject);
+                ps.execute();
+                return true;
+            }
+            else{
+                PreparedStatement ps = conn.prepareStatement("UPDATE sys.Project SET isArchived = 0 WHERE idProject=?;");
+                ps.setString(1, proj.idProject);
+                ps.execute();
+                return true;
+            }
+        }
+        catch(Exception e){
+            throw new Exception("Failed to mark archived: " + e.getMessage());
         }
     }
 }
