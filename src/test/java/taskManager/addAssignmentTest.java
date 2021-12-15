@@ -14,15 +14,21 @@ public class addAssignmentTest extends LambdaTest{
             createProjectRequest cpr = new createProjectRequest("testProjectAssign");
             createProjectResponse respC = new createProjectHandler().handleRequest(cpr, createContext("create"));
 
-            addTaskRequest atr1 = new addTaskRequest("assignTestTeammate","testProjectAssign");
+            addTaskRequest atr1 = new addTaskRequest("assignTestTask1","testProjectAssign");
             addTaskResponse atrsp1 = new addTaskHandler().handleRequest(atr1, createContext("create"));
+
+            addTaskRequest atr2 = new addTaskRequest("assignTestTask2","testProjectAssign");
+            addTaskResponse atrsp2 = new addTaskHandler().handleRequest(atr1, createContext("create"));
 
             addTeammateRequest atmr1 = new addTeammateRequest("assignTestTeammate", "testProjectAssign");
             addTeammateResponse respT1 = new addTeammateHandler().handleRequest(atmr1, createContext("create"));
 
             assignRequest ar1 = new assignRequest("assignTestTeammate", "testProjectAssign", atrsp1.getTaskID());
             assignResponse assignresp1 = new assignmentHandler().handleRequest(ar1, createContext("create"));
+            assignRequest ar2 = new assignRequest("assignTestTeammate", "testProjectAssign", atrsp2.getTaskID());
+            assignResponse assignresp2 = new assignmentHandler().handleRequest(ar2, createContext("create"));
             Assert.assertEquals(200, assignresp1.httpCode);
+            Assert.assertEquals(200, assignresp2.httpCode);
 
             Assert.assertEquals(ar1.getName(), "assignTestTeammate");
             Assert.assertEquals(ar1.getProjectName(), "testProjectAssign");
