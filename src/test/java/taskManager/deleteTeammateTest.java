@@ -16,6 +16,14 @@ public class deleteTeammateTest extends LambdaTest{
 
             addTeammateRequest atrA = new addTeammateRequest("testTeammateD", "testProjectDelTeammate");
             addTeammateResponse respA = new addTeammateHandler().handleRequest(atrA, createContext("create"));
+
+//            addTaskRequest atr = new addTaskRequest("testTaskDelTeammate","testProjectDelTeammate");
+//            addTaskResponse atrsp = new addTaskHandler().handleRequest(atr, createContext("create"));
+//
+//            assignRequest ar1 = new assignRequest("testTeammateD", "testProjectDelTeammate", atrsp.getTaskID());
+//            assignResponse assignresp1 = new assignmentHandler().handleRequest(ar1, createContext("create"));
+
+
             deleteTeammateRequest dtr = new deleteTeammateRequest("testTeammateD", "testProjectDelTeammate");
             deleteTeammateResponse resp = new deleteTeammateHandler().handleRequest(dtr, createContext("create"));
             Assert.assertEquals(200, resp.statusCode);
