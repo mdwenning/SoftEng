@@ -375,17 +375,18 @@ public class projectsDAO {
         }
     }
 
-    public int getNextSequence(Project project) throws Exception{
-        List<Task> allTasks = getAllTasks(project.name);
-        //Eventually once subdivision is implemented, have the parent id also
-        // passed in so you can gather all tasks under that id in a sub list
-        int high = 0;
-        for(Task t : allTasks){
-            if(t.sequence > high){high = t.sequence;}
-        }
-        return high+1;
-
-    }
+    //UNUSED
+//    public int getNextSequence(Project project) throws Exception{
+//        List<Task> allTasks = getAllTasks(project.name);
+//        //Eventually once subdivision is implemented, have the parent id also
+//        // passed in so you can gather all tasks under that id in a sub list
+//        int high = 0;
+//        for(Task t : allTasks){
+//            if(t.sequence > high){high = t.sequence;}
+//        }
+//        return high+1;
+//
+//    }
 
     public int getNextSequence(String projectName, String idParent) throws Exception{
         try {
@@ -403,42 +404,44 @@ public class projectsDAO {
         }
     }
 
-    public int getDepth(String idParent) throws Exception{
-        try{
-            Task task = getTask(idParent);
-            int depth = 1;
-            while(task.idParent != null){
-                depth += 1;
-                task = getTask(task.idParent);
-            }
-            return depth;
-        }
-        catch(Exception e){
-            throw new Exception("Failed to get depth: " + e.getMessage());
-        }
-    }
+    //UNUSED
+//    public int getDepth(String idParent) throws Exception{
+//        try{
+//            Task task = getTask(idParent);
+//            int depth = 1;
+//            while(task.idParent != null){
+//                depth += 1;
+//                task = getTask(task.idParent);
+//            }
+//            return depth;
+//        }
+//        catch(Exception e){
+//            throw new Exception("Failed to get depth: " + e.getMessage());
+//        }
+//    }
 
-    public Task getTask(String name, String projectName) throws Exception{
-        try {
-            Task task = null;
-            Project project = getProject(projectName);
-            String idProject = project.idProject;
-            PreparedStatement ps = conn.prepareStatement("SELECT * FROM " + "sys.Task" + " WHERE (name, idProject) = (?,?);");
-            ps.setString(1, name);
-            ps.setString(2, idProject);
-            ResultSet rs = ps.executeQuery();
-            while (rs.next()) {
-                task = generateTask(rs);
-            }
-            rs.close();
-            ps.close();
-            return task;
-        }
-        catch(Exception e){
-            e.printStackTrace();
-            throw new Exception("Failed in getting task: " + e.getMessage());
-        }
-    }
+    //UNUSED
+//    public Task getTask(String name, String projectName) throws Exception{
+//        try {
+//            Task task = null;
+//            Project project = getProject(projectName);
+//            String idProject = project.idProject;
+//            PreparedStatement ps = conn.prepareStatement("SELECT * FROM " + "sys.Task" + " WHERE (name, idProject) = (?,?);");
+//            ps.setString(1, name);
+//            ps.setString(2, idProject);
+//            ResultSet rs = ps.executeQuery();
+//            while (rs.next()) {
+//                task = generateTask(rs);
+//            }
+//            rs.close();
+//            ps.close();
+//            return task;
+//        }
+//        catch(Exception e){
+//            e.printStackTrace();
+//            throw new Exception("Failed in getting task: " + e.getMessage());
+//        }
+//    }
 
     public Task getTask(String idTask) throws Exception{
         try {

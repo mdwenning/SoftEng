@@ -34,6 +34,8 @@ public class renameTaskTest extends LambdaTest{
             renameTaskResponse arErr = new renameTaskResponse("err", 400);
             Assert.assertEquals("err", arErr.error);
             Assert.assertEquals(400, arErr.httpCode);
+
+            renameTaskRequest rtrqConstructorTest = new renameTaskRequest();
         }
         catch (Exception e){
             e.printStackTrace();

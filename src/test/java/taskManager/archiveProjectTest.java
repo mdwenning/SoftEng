@@ -25,6 +25,8 @@ public class archiveProjectTest extends LambdaTest{
             markArchivedResponse respErr = new markArchivedResponse(400, "err");
             Assert.assertEquals(400, respErr.statusCode);
             Assert.assertEquals("err", respErr.error);
+
+            markArchivedRequest marqConstructorTest = new markArchivedRequest();
         }
         catch (Exception e){
             e.printStackTrace();

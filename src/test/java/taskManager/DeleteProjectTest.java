@@ -10,6 +10,9 @@ public class DeleteProjectTest extends LambdaTest{
     @Test
     public void testDeleteProject(){
         try {
+            deleteProjectRequest dprD = new deleteProjectRequest("testProjectDelete");
+            deleteProjectResponse respD = new deleteProjectHandler().handleRequest(dprD, createContext("create"));
+
             createProjectRequest cpr = new createProjectRequest("testProjectDelete");
             createProjectResponse respC = new createProjectHandler().handleRequest(cpr, createContext("create"));
 
@@ -50,6 +53,8 @@ public class DeleteProjectTest extends LambdaTest{
             Assert.assertEquals("delTestProj", respErrTest.name);
             Assert.assertEquals(200, respErrTest.statusCode);
             Assert.assertEquals("errorMsg", respErrTest.error);
+
+            deleteProjectRequest dprqConstructorTest = new deleteProjectRequest();
         }
         catch (Exception e){
             e.printStackTrace();

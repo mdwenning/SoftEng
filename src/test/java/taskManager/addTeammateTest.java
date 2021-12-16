@@ -32,6 +32,7 @@ public class addTeammateTest extends LambdaTest{
             Assert.assertEquals(atrspErrTest.error, "Error test");
             Assert.assertEquals(resp.httpCode, atrspErrTest.httpCode);
 
+            addTeammateRequest atmrqConstructorTest = new addTeammateRequest();
         }
         catch (Exception e){
             e.printStackTrace();
