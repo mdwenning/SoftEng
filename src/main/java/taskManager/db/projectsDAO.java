@@ -50,7 +50,8 @@ public class projectsDAO {
         String name = rs.getString("name");
         String idProject = rs.getString("idProject");
         int isArchived = rs.getInt("isArchived");
-        return new Project(name, idProject, isArchived);
+        String percentComplete = getPerc(name);
+        return new Project(name, idProject, isArchived, percentComplete);
     }
 
     public Teammate generateTeammate(ResultSet rs) throws Exception {
