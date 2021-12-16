@@ -79,7 +79,7 @@
     			projects = data['list'];
     			for (var i = 0; i < projects.length; i++) {
     				if (projects[i]['isArchived'] == 0) {
-    					document.getElementById('ActiveProjects').innerHTML += "<tr style='cursor: pointer' onclick='loadProject(\"" + projects[i]['name'].replaceAll("'", "%2B") + "\");'><td>" + projects[i]['name'].replaceAll("+", " ") + "</td><td>" + "0%" + "</td></tr>";
+    					document.getElementById('ActiveProjects').innerHTML += "<tr style='cursor: pointer' onclick='loadProject(\"" + projects[i]['name'].replaceAll("'", "%2B") + "\");'><td>" + projects[i]['name'].replaceAll("+", " ") + "</td><td>" + projects[i]['percentComplete'] + "</td></tr>";
     				}else{
     					document.getElementById('ArchivedProjects').innerHTML += "<tr><td>" + projects[i]['name'].replaceAll("+", " ") + "</td></tr>";
     				}
@@ -96,7 +96,7 @@
 	}
 	
 	function deleteProject() {
-    	var url = "https://s2vj3dtlfl.execute-api.us-east-1.amazonaws.com/alpha/project/" + document.getElementById("pid").value + "/delete";
+    	var url = "https://s2vj3dtlfl.execute-api.us-east-1.amazonaws.com/alpha/project/" + document.getElementById("pid").value.replaceAll(' ', '+') + "/delete";
     	document.getElementById('Delete').innerHTML = "<span class='spinner-grow spinner-grow-sm' role='status' aria-hidden='true'></span> Please wait...";
     	document.getElementById('pid').disabled = true;
     	document.getElementById('Delete').disabled = true;
