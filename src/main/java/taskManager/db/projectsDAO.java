@@ -643,9 +643,10 @@ public class projectsDAO {
                 perc = ((double) (completed) / bottomTasks.size()) * 100.00;
             }
             else{
-                perc = 100.00;
+                perc = 0.00;
             }
-            return "" + perc + "%";
+            int percInt = (int) perc;
+            return "" + percInt + "%";
         }
 
         catch(Exception e){
