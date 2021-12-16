@@ -50,8 +50,7 @@ public class projectsDAO {
         String name = rs.getString("name");
         String idProject = rs.getString("idProject");
         int isArchived = rs.getInt("isArchived");
-        String percentComplete = getPerc(name);
-        return new Project(name, idProject, isArchived, percentComplete);
+        return new Project(name, idProject, isArchived);
     }
 
     public Teammate generateTeammate(ResultSet rs) throws Exception {
@@ -639,7 +638,13 @@ public class projectsDAO {
                     completed += 1;
                 }
             }
-            double perc = ((double)(completed) / bottomTasks.size()) *100.00;
+            double perc;
+            if(bottomTasks.size() != 0) {
+                perc = ((double) (completed) / bottomTasks.size()) * 100.00;
+            }
+            else{
+                perc = 100.00;
+            }
             return "" + perc + "%";
         }
 
