@@ -1,0 +1,21 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="Run All Tests" type="JUnit" factoryName="JUnit">
+    <module name="demo" />
+    <option name="PACKAGE_NAME" value="" />
+    <option name="MAIN_CLASS_NAME" value="" />
+    <option name="METHOD_NAME" value="" />
+    <option name="TEST_OBJECT" value="package" />
+    <envs>
+      <env name="dbName" value="sys" />
+      <env name="dbPassword" value="vpdbpassword" />
+      <env name="dbUsername" value="admin" />
+      <env name="jdbcTag" value="jdbc:mysql://" />
+      <env name="multiQueries" value="?allowMultiQueries=true" />
+      <env name="rdsMySqlDatabasePort" value="3306" />
+      <env name="rdsMySqlDatabaseUrl" value="vpdb.crx6gcpjsd9p.us-east-1.rds.amazonaws.com" />
+    </envs>
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>

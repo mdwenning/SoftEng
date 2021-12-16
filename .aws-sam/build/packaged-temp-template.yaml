@@ -4,6 +4,6 @@ Resources:
     Properties:
       Timeout: 300
       MemorySize: 128
-      Handler: taskManager.assignmentHandler
-      CodeUri: s3://vicitpepercitbucket/829ee08e8b64adca18f8222b800ef3d7
+      Handler: taskManager.listProjectsHandler
+      CodeUri: s3://vicitpepercitbucket/f3f0e70715e1c886103c49b4e3bdb048
       Runtime: java8.al2

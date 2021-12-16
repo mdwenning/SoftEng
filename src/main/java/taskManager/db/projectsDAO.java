@@ -326,7 +326,6 @@ public class projectsDAO {
             ps.setString(2, task.idProject);
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
-                Teammate t = generateTeammate(rs);
                 rs.close();
                 return false;
             }
@@ -376,39 +375,73 @@ public class projectsDAO {
         }
     }
 
-    public int getNextSequence(Project project) throws Exception{
-        List<Task> allTasks = getAllTasks(project.name);
-        //Eventually once subdivision is implemented, have the parent id also
-        // passed in so you can gather all tasks under that id in a sub list
-        int high = 0;
-        for(Task t : allTasks){
-            if(t.sequence > high){high = t.sequence;}
-        }
-        return high+1;
+    //UNUSED
+//    public int getNextSequence(Project project) throws Exception{
+//        List<Task> allTasks = getAllTasks(project.name);
+//        //Eventually once subdivision is implemented, have the parent id also
+//        // passed in so you can gather all tasks under that id in a sub list
+//        int high = 0;
+//        for(Task t : allTasks){
+//            if(t.sequence > high){high = t.sequence;}
+//        }
+//        return high+1;
+//
+//    }
 
-    }
-
-    public Task getTask(String name, String projectName) throws Exception{
+    public int getNextSequence(String projectName, String idParent) throws Exception{
         try {
-            Task task = null;
-            Project project = getProject(projectName);
-            String idProject = project.idProject;
-            PreparedStatement ps = conn.prepareStatement("SELECT * FROM " + "sys.Task" + " WHERE (name, idProject) = (?,?);");
-            ps.setString(1, name);
-            ps.setString(2, idProject);
-            ResultSet rs = ps.executeQuery();
-            while (rs.next()) {
-                task = generateTask(rs);
+            List<Task> allTasks = getAllTasks(projectName);
+            List<Task> taskList = new ArrayList<>();
+            for(Task t : allTasks){
+                if(Objects.equals(t.idParent, idParent)){
+                    taskList.add(t);
+                }
             }
-            rs.close();
-            ps.close();
-            return task;
+            return taskList.size() + 1;
         }
         catch(Exception e){
-            e.printStackTrace();
-            throw new Exception("Failed in getting task: " + e.getMessage());
+            throw new Exception("Failed to get sequence: " + e.getMessage());
         }
     }
+
+    //UNUSED
+//    public int getDepth(String idParent) throws Exception{
+//        try{
+//            Task task = getTask(idParent);
+//            int depth = 1;
+//            while(task.idParent != null){
+//                depth += 1;
+//                task = getTask(task.idParent);
+//            }
+//            return depth;
+//        }
+//        catch(Exception e){
+//            throw new Exception("Failed to get depth: " + e.getMessage());
+//        }
+//    }
+
+    //UNUSED
+//    public Task getTask(String name, String projectName) throws Exception{
+//        try {
+//            Task task = null;
+//            Project project = getProject(projectName);
+//            String idProject = project.idProject;
+//            PreparedStatement ps = conn.prepareStatement("SELECT * FROM " + "sys.Task" + " WHERE (name, idProject) = (?,?);");
+//            ps.setString(1, name);
+//            ps.setString(2, idProject);
+//            ResultSet rs = ps.executeQuery();
+//            while (rs.next()) {
+//                task = generateTask(rs);
+//            }
+//            rs.close();
+//            ps.close();
+//            return task;
+//        }
+//        catch(Exception e){
+//            e.printStackTrace();
+//            throw new Exception("Failed in getting task: " + e.getMessage());
+//        }
+//    }
 
     public Task getTask(String idTask) throws Exception{
         try {
@@ -501,6 +534,19 @@ public class projectsDAO {
         }
     }
 
+    public boolean updateAssignment(String idParent, String idTask) throws Exception{
+        try{
+            PreparedStatement ps = conn.prepareStatement("UPDATE sys.Assignments SET idTask = ? WHERE idTask=?;");
+            ps.setString(1, idTask);
+            ps.setString(2, idParent);
+            ps.execute();
+            return true;
+        }
+        catch(Exception e){
+            throw new Exception("Failed to update assignment: " + e.getMessage());
+        }
+    }
+
     public boolean toggleComplete(String idTask) throws Exception{
         try {
             if(getTask(idTask).isComplete == 0) {
@@ -539,6 +585,71 @@ public class projectsDAO {
         }
         catch(Exception e){
             throw new Exception("Failed to mark archived: " + e.getMessage());
+        }
+    }
+
+    public boolean decompose(String name, String projectName, String idParent) throws Exception{
+        try {
+            Task parent = getTask(idParent);
+            List<Task> allTasks = getAllTasks(projectName);
+            int sequence = getNextSequence(projectName, idParent);
+
+            String tempName = parent.name;
+            String[] arr = tempName.split(":", 2);
+            tempName = arr[0] + "." + sequence + ": " + name;
+
+            Task task = new Task(tempName, getProject(projectName).idProject, idParent, sequence);
+            updateAssignment(idParent, task.idTask);
+
+            PreparedStatement ps = conn.prepareStatement("INSERT INTO " + "sys.Task" + " (idTask, name, idParent, isComplete, idProject, sequence) value(?,?,?,?,?,?);");
+            ps.setString(1, task.idTask);
+            ps.setString(2, task.name);
+            ps.setString(3, task.idParent);
+            ps.setInt(4, task.isComplete);
+            ps.setString(5, task.idProject);
+            ps.setInt(6, task.sequence);
+            ps.execute();
+
+            return true;
+        }
+        catch(Exception e){
+            throw new Exception("Failed to decompose: " + e.getMessage());
+        }
+    }
+
+    public String getPerc(String projectName) throws Exception{
+        try{
+            List<Task> allTasks = getAllTasks(projectName);
+            List<Task> bottomTasks = new ArrayList<>();
+            for(Task task : allTasks){
+                boolean isParent = false;
+                for(Task child : allTasks){
+                    if(Objects.equals(child.idParent, task.idTask)){
+                        isParent = true;
+                    }
+                }
+                if(!isParent){
+                    bottomTasks.add(task);
+                }
+            }
+            int completed = 0;
+            for(Task task : bottomTasks){
+                if (task.isComplete == 1){
+                    completed += 1;
+                }
+            }
+            double perc;
+            if(bottomTasks.size() != 0) {
+                perc = ((double) (completed) / bottomTasks.size()) * 100.00;
+            }
+            else{
+                perc = 100.00;
+            }
+            return "" + perc + "%";
+        }
+
+        catch(Exception e){
+            throw new Exception("Failed to decompose: " + e.getMessage());
         }
     }
 }

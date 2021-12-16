@@ -9,15 +9,16 @@ import taskManager.model.Project;
 import java.util.List;
 
 public class listProjectsHandler implements RequestHandler<Object, listProjectsResponse> {
-    List<Project> getProjects() throws Exception{
-        projectsDAO dao = new projectsDAO();
-        return dao.getAllProjects();
-    }
+
     @Override
     public listProjectsResponse handleRequest(Object input, Context context){
         listProjectsResponse response;
         try{
-            List<Project> list = getProjects();
+            projectsDAO dao = new projectsDAO();
+            List<Project> list = dao.getAllProjects();
+            for(Project p : list){
+                p.setPerc(dao.getPerc(p.name));
+            }
             response = new listProjectsResponse(list, 200);
         }
         catch(Exception e){

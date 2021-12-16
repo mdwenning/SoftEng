@@ -11,13 +11,15 @@ public class loadProjectResponse {
     public final String name;
     public final List<Teammate> teammates;
     public final List<Task> tasks;
+    public final String percentComplete;
     public final int statusCode;
     public final String error;
 
-    public loadProjectResponse(String name, List<Teammate> mems, List<Task> tasks, int statusCode){
+    public loadProjectResponse(String name, List<Teammate> mems, List<Task> tasks, String percentComplete, int statusCode){
         this.name = name;
         this.teammates = mems;
         this.tasks = tasks;
+        this.percentComplete = percentComplete;
         this.statusCode = statusCode;
         this.error = "";
     }
@@ -26,6 +28,7 @@ public class loadProjectResponse {
         this.name = "";
         this.teammates = new ArrayList<Teammate>();
         this.tasks = new ArrayList<Task>();
+        this.percentComplete = "";
         this.statusCode = statusCode;
         this.error = error;
     }

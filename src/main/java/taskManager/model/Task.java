@@ -40,4 +40,13 @@ public class Task {
         this.isComplete = 0;
         this.sequence = sequence;
     }
+    public Task(String name, String idProject, String idParent, int sequence){
+        this.name = name;
+        this.idProject = idProject;
+        this.idParent = idParent;
+        this.assignees = new ArrayList<>();
+        this.idTask = UUID.randomUUID().toString();
+        this.isComplete = 0;
+        this.sequence = sequence;
+    }
 }
