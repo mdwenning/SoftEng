@@ -40,6 +40,10 @@ public class decomposeTaskTest extends LambdaTest{
             Assert.assertEquals("decomposeTaskErr", respErr.error);
 
             decomposeRequest dcrqConstructorTest = new decomposeRequest();
+
+            deleteProjectRequest dprDD = new deleteProjectRequest("testProjectDecompose");
+            deleteProjectResponse respDD = new deleteProjectHandler().handleRequest(dprDD, createContext("create"));
+
         }
         catch (Exception e){
             e.printStackTrace();

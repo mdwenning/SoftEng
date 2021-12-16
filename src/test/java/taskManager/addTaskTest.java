@@ -38,6 +38,10 @@ public class addTaskTest extends LambdaTest{
             Assert.assertEquals(resp.statusCode, atrspErrTest.httpCode);
 
             addTaskRequest atrqConstructorTest = new addTaskRequest();
+
+            deleteProjectRequest dprDD = new deleteProjectRequest("testProjectTask");
+            deleteProjectResponse respDD = new deleteProjectHandler().handleRequest(dprDD, createContext("create"));
+
         }
         catch (Exception e){
             e.printStackTrace();

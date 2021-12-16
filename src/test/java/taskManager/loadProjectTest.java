@@ -40,6 +40,10 @@ public class loadProjectTest extends LambdaTest{
             Assert.assertEquals(400, arErr.statusCode);
 
             loadProjectRequest lprqConstructorTest = new loadProjectRequest();
+
+            deleteProjectRequest dprDD = new deleteProjectRequest("testProjectLoad");
+            deleteProjectResponse respDD = new deleteProjectHandler().handleRequest(dprDD, createContext("create"));
+
         }
         catch (Exception e){
             e.printStackTrace();

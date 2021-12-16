@@ -8,8 +8,8 @@ public class archiveProjectTest extends LambdaTest{
     @Test
     public void testArchiveProject(){
         try {
-            deleteProjectRequest dpr = new deleteProjectRequest("testProjectArchive");
-            deleteProjectResponse respD = new deleteProjectHandler().handleRequest(dpr, createContext("create"));
+            deleteProjectRequest dprD = new deleteProjectRequest("testProjectArchive");
+            deleteProjectResponse respD = new deleteProjectHandler().handleRequest(dprD, createContext("create"));
 
             createProjectRequest cpr = new createProjectRequest("testProjectArchive");
             createProjectResponse resp = new createProjectHandler().handleRequest(cpr, createContext("create"));
@@ -27,6 +27,10 @@ public class archiveProjectTest extends LambdaTest{
             Assert.assertEquals("err", respErr.error);
 
             markArchivedRequest marqConstructorTest = new markArchivedRequest();
+
+            deleteProjectRequest dprDD = new deleteProjectRequest("testProjectArchive");
+            deleteProjectResponse respDD = new deleteProjectHandler().handleRequest(dprDD, createContext("create"));
+
         }
         catch (Exception e){
             e.printStackTrace();

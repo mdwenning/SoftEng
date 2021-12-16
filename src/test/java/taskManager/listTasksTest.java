@@ -42,6 +42,10 @@ public class listTasksTest extends LambdaTest{
             Assert.assertEquals(400, arErr.statusCode);
 
             listTasksRequest ltrqConstructorTest = new listTasksRequest();
+
+            deleteProjectRequest dprDD = new deleteProjectRequest("listTasksProjectTest");
+            deleteProjectResponse D = new deleteProjectHandler().handleRequest(dprDD, createContext("create"));
+
         }
         catch (Exception e){
             e.printStackTrace();

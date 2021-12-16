@@ -33,6 +33,9 @@ public class deleteTeammateAndGetAllTasksTest extends LambdaTest{
 
             Assert.assertEquals(200, respL.statusCode);
 
+            deleteProjectRequest dprDD = new deleteProjectRequest("testProjectDelTeammateTsk");
+            deleteProjectResponse respDD = new deleteProjectHandler().handleRequest(dprDD, createContext("create"));
+
 
         }
         catch (Exception e){

@@ -36,6 +36,11 @@ public class listTeammatesTest extends LambdaTest{
 
             listTeammatesRequest ltmrqConstructorTest = new listTeammatesRequest();
 
+
+            deleteProjectRequest dprDD = new deleteProjectRequest("listTeamProjectTest");
+            deleteProjectResponse respDD = new deleteProjectHandler().handleRequest(dprDD, createContext("create"));
+
+
         }
         catch (Exception e){
             e.printStackTrace();

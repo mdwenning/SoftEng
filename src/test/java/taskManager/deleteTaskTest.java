@@ -25,6 +25,10 @@ public class deleteTaskTest extends LambdaTest{
             Assert.assertEquals("delTaskTst", respErrTest.name);
             Assert.assertEquals(200, respErrTest.statusCode);
             Assert.assertEquals("errorMsg", respErrTest.error);
+
+            deleteProjectRequest dprDD = new deleteProjectRequest("testTaskDelete");
+            deleteProjectResponse respDD = new deleteProjectHandler().handleRequest(dprDD, createContext("create"));
+
         }
         catch (Exception e){
             e.printStackTrace();

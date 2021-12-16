@@ -8,8 +8,8 @@ public class deleteAssignmentTest extends LambdaTest{
     @Test
     public void testDeleteAssignment(){
         try{
-            deleteProjectRequest dpr = new deleteProjectRequest("testProjectAssignDel");
-            deleteProjectResponse respD = new deleteProjectHandler().handleRequest(dpr, createContext("create"));
+            deleteProjectRequest dprD = new deleteProjectRequest("testProjectAssignDel");
+            deleteProjectResponse respD = new deleteProjectHandler().handleRequest(dprD, createContext("create"));
 
             createProjectRequest cpr = new createProjectRequest("testProjectAssignDel");
             createProjectResponse respC = new createProjectHandler().handleRequest(cpr, createContext("create"));
@@ -35,6 +35,10 @@ public class deleteAssignmentTest extends LambdaTest{
 
             Assert.assertEquals(200, resp1.httpCode);
             Assert.assertEquals(200, resp2.httpCode);
+
+            deleteProjectRequest dprDD = new deleteProjectRequest("testProjectAssignDel");
+            deleteProjectResponse respDD = new deleteProjectHandler().handleRequest(dprDD, createContext("create"));
+
 
         }
         catch (Exception e){

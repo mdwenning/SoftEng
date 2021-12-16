@@ -36,6 +36,10 @@ public class renameTaskTest extends LambdaTest{
             Assert.assertEquals(400, arErr.httpCode);
 
             renameTaskRequest rtrqConstructorTest = new renameTaskRequest();
+
+            deleteProjectRequest dprDD = new deleteProjectRequest("testProjectRenameTask");
+            deleteProjectResponse respDD = new deleteProjectHandler().handleRequest(dprDD, createContext("create"));
+
         }
         catch (Exception e){
             e.printStackTrace();

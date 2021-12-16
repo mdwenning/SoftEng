@@ -8,8 +8,8 @@ public class CreateProjectTest extends LambdaTest{
     @Test
     public void testCreateProject(){
         try {
-            deleteProjectRequest dpr = new deleteProjectRequest("testProjectCreate");
-            deleteProjectResponse respD = new deleteProjectHandler().handleRequest(dpr, createContext("create"));
+            deleteProjectRequest dprD = new deleteProjectRequest("testProjectCreate");
+            deleteProjectResponse respD = new deleteProjectHandler().handleRequest(dprD, createContext("create"));
 
             createProjectRequest cpr = new createProjectRequest("testProjectCreate");
             createProjectResponse resp = new createProjectHandler().handleRequest(cpr, createContext("create"));
@@ -25,6 +25,10 @@ public class CreateProjectTest extends LambdaTest{
             Assert.assertEquals("createProjErrTst", respErr.name);
 
             createProjectRequest cprqConstructorTest = new createProjectRequest();
+
+            deleteProjectRequest dprDD = new deleteProjectRequest("testProjectCreate");
+            deleteProjectResponse respDD = new deleteProjectHandler().handleRequest(dprDD, createContext("create"));
+
         }
         catch (Exception e){
             e.printStackTrace();

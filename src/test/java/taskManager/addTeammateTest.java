@@ -33,6 +33,10 @@ public class addTeammateTest extends LambdaTest{
             Assert.assertEquals(resp.httpCode, atrspErrTest.httpCode);
 
             addTeammateRequest atmrqConstructorTest = new addTeammateRequest();
+
+            deleteProjectRequest dprDD = new deleteProjectRequest("testProjectAddTeammate");
+            deleteProjectResponse respDD = new deleteProjectHandler().handleRequest(dprDD, createContext("create"));
+
         }
         catch (Exception e){
             e.printStackTrace();

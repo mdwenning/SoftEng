@@ -8,8 +8,8 @@ public class markTaskCompleteTest extends LambdaTest{
     @Test
     public void testTaskMarkComplete(){
         try {
-            deleteProjectRequest dpr = new deleteProjectRequest("testTaskMarkComplete");
-            deleteProjectResponse respD = new deleteProjectHandler().handleRequest(dpr, createContext("create"));
+            deleteProjectRequest dprD = new deleteProjectRequest("testTaskMarkComplete");
+            deleteProjectResponse respD = new deleteProjectHandler().handleRequest(dprD, createContext("create"));
 
             createProjectRequest cpr = new createProjectRequest("testTaskMarkComplete");
             createProjectResponse resp = new createProjectHandler().handleRequest(cpr, createContext("create"));
@@ -42,6 +42,10 @@ public class markTaskCompleteTest extends LambdaTest{
             Assert.assertEquals(400, arErr.statusCode);
 
             markTaskCompleteRequest mtcrqConstructorTest = new markTaskCompleteRequest();
+
+            deleteProjectRequest dprDD = new deleteProjectRequest("testTaskMarkComplete");
+            deleteProjectResponse respDD = new deleteProjectHandler().handleRequest(dprDD, createContext("create"));
+
 
         }
         catch (Exception e){

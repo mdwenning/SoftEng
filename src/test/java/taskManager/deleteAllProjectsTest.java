@@ -14,6 +14,8 @@ public class deleteAllProjectsTest extends LambdaTest{
             deleteAllProjectsResponse respErr = new deleteAllProjectsResponse(400, "errMsg");
             Assert.assertEquals(400, respErr.statusCode);
             Assert.assertEquals("errMsg", respErr.error);
+
+            deleteAllProjectsResponse respD = deleteAllProjectsHandler.deleteAllProjectsFromDB();
         }
         catch (Exception e){
             e.printStackTrace();
