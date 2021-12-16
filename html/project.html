@@ -196,7 +196,7 @@
     				if (tasks[i]['isComplete'] == 1) {
     					completeToggle = '<i style="color: green; cursor: pointer" class="fas fa-check" onclick="markComplete(\'' + tasks[i]['idTask'] + '\');"></i>';
     				}
-    				document.getElementById('tasks').innerHTML += "<tr><td>" + tasks[i]['name'] + " " + assignees + "</td><td><i style='cursor: pointer' class='fas fa-pen' onclick='editTask(\"" + tasks[i]['idTask'] + "\");'></i></td><td><i class='fas fa-plus'></i></td><td><i style='cursor: pointer' class='fas fa-user-edit' onclick='assign(\"" + tasks[i]['idTask'] + "\");'></i></td><td>" + completeToggle + "</tr>";
+    				document.getElementById('tasks').innerHTML += "<tr id='" + tasks[i]['sequence'] + "'><td>" + tasks[i]['name'] + " " + assignees + "</td><td><i style='cursor: pointer' class='fas fa-pen' onclick='editTask(\"" + tasks[i]['idTask'] + "\");'></i></td><td><i class='fas fa-plus' style='cursor: pointer' onclick='subdivideTask(\"" + tasks[i]['idTask'] + "\");'></i></td><td><i style='cursor: pointer' class='fas fa-user-edit' onclick='assign(\"" + tasks[i]['idTask'] + "\");'></i></td><td>" + completeToggle + "</tr>";
     				for (var j = 0; j < tasks[i]['assignees'].length; j++) {
     					var lane = tasks[i]['assignees'][j] + "-tasks";
     					var icon = "";
@@ -277,7 +277,7 @@
     });
     
     function deleteTeammate(id) {
-    	var url = "https://s2vj3dtlfl.execute-api.us-east-1.amazonaws.com/alpha/teammate/" + id + "?pid=" + document.getElementById('proj-name').innerHTML.replaceAll(" ", "+");
+    	var url = "https://s2vj3dtlfl.execute-api.us-east-1.amazonaws.com/alpha/teammate/" + id + "?pid=" + document.getElementById('proj-name').innerHTML.replaceAll(" ", "%2B");
     	
     	document.getElementById('content').style.display = "none";
     	document.getElementById('loader').style.display = "block";
@@ -344,7 +344,7 @@
     		for (var i = 0; i < (rows.length - 1); i++) {
 				var shouldSwitch = false;
 
-      			if (rows[i].getElementsByTagName("td")[0].innerHTML > rows[i + 1].getElementsByTagName("td")[0].innerHTML) {
+      			if (rows[i].id > rows[i + 1].id) {
 					shouldSwitch = true;
 					break;
       			}
@@ -373,7 +373,7 @@
 	
 		var user = prompt("Enter the name of a user you would like to assign this task to (or unassign if already assigned):");
 		if (user) {
-			var url = "https://s2vj3dtlfl.execute-api.us-east-1.amazonaws.com/alpha/task/" + task_id + "/assign?teammate=" + user + "&project=" + proj_id.replaceAll(" ", "%2B").replaceAll("'", "%27");
+			var url = "https://s2vj3dtlfl.execute-api.us-east-1.amazonaws.com/alpha/task/" + task_id + "/assign?teammate=" + user + "&project=" + proj_id.replaceAll(" ", "%252B").replaceAll("'", "%2527");
 			
 			console.log(url);
 			
@@ -430,6 +430,35 @@
 		
 		if (new_name) {
 			var url = "https://s2vj3dtlfl.execute-api.us-east-1.amazonaws.com/alpha/task/" + task_id + "?name=" + encodeURIComponent(new_name);
+		
+			document.getElementById('loader').style.display = "block";
+			document.getElementById('content').style.display = "none";
+		
+			$.ajax({
+				type: "POST",
+				url: url,
+				success: function(data)
+				{
+					window.location.reload();
+				},
+				error: function(xhr, status, error)
+				{
+					document.getElementById('loader').style.display = "none";
+					document.getElementById('content').style.display = "block";
+					console.log(xhr);
+					console.log(status);
+					console.log(error);
+					alert(error.Message);
+				}
+			});
+		}
+	}
+	
+	function subdivideTask(task_id) {
+		var task_name = prompt("Enter a name for this new subtask:");
+		
+		if (task_name) {
+			var url = "https://s2vj3dtlfl.execute-api.us-east-1.amazonaws.com/alpha/task/" + task_id + "/subdivide?name=" + encodeURIComponent(task_name) + "&pid=" + document.getElementById('proj-name').innerHTML.replaceAll(" ", "%2B");
 		
 			document.getElementById('loader').style.display = "block";
 			document.getElementById('content').style.display = "none";
