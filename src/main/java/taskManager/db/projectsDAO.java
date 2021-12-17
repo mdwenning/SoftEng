@@ -9,9 +9,7 @@ import javax.xml.crypto.dsig.spec.ExcC14NParameterSpec;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 public class projectsDAO {
     java.sql.Connection conn;
@@ -168,6 +166,9 @@ public class projectsDAO {
                     allTasks.add(temp);
                 }
             }
+
+            updateOrder(allTasks, project);
+
             return allTasks;
         } catch (Exception e) {
             throw new Exception("Failed in getting tasks: " + e.getMessage());
@@ -187,6 +188,7 @@ public class projectsDAO {
             }
             resultSet.close();
             statement.close();
+
             return allTasks;
         } catch (Exception e) {
             throw new Exception("Failed in getting tasks: " + e.getMessage());
@@ -337,6 +339,9 @@ public class projectsDAO {
             ps.setString(5, task.idProject);
             ps.setInt(6, task.sequence);
             ps.execute();
+
+            //updateOrder(task, projectName);
+
             return true;
         }
         catch(Exception e){
@@ -368,6 +373,10 @@ public class projectsDAO {
             ps.setString(1, task.idTask);
             int numAffected = ps.executeUpdate();
             ps.close();
+
+            //String projNname = task.
+            //updateOrder(task, projectName);
+
             return (numAffected == 1);
         }
         catch(Exception e){
@@ -610,6 +619,8 @@ public class projectsDAO {
             ps.setInt(6, task.sequence);
             ps.execute();
 
+            //updateOrder(parent, projectName);
+
             return true;
         }
         catch(Exception e){
@@ -654,14 +665,107 @@ public class projectsDAO {
         }
     }
 
-    public void updateOrder(Task task, String projectName) throws Exception{
-        Project project = getProject(projectName);
-        List<Task> allTasks = getAllTasks(project.name);
+    public void updateOrder(List<Task> allTasks, String projectName) throws Exception{
+        try{
+            Project project = getProject(projectName);
+            //List<Task> allTasks = getAllTasks(project.name);
 
-        for(Task t : allTasks){
-            String[] tempArr = t.name.split(".");
+            List<Integer> taskValues = new ArrayList<>();
+
+            for(Task t : allTasks){
+                List<Integer> lst = new ArrayList<>();
+
+                char main = t.name.charAt(0);
+                int mainInt = (int)main - 48;
+                char sub1 = t.name.charAt(2);
+                int sub1Int = (int)sub1 - 48;
+                char sub2 = t.name.charAt(4);
+                int sub2Int = (int)sub2 - 48;
+
+                if(mainInt > 0 && mainInt<4){
+                    lst.add(mainInt);
+                }
+                if(sub1Int > 0 && sub1Int<4){
+                    lst.add(sub1Int);
+                }
+                if(sub2Int > 0 && sub2Int<4){
+                    lst.add(sub2Int);
+                }
+
+                int value = 0;
+                int multiplier = 100;
+                for(Integer i: lst){
+
+                    if (i == 1 || i == 2 || i == 3 || i == 4 || i == 5 || i == 6 || i == 7 || i == 8 || i == 9){
+                            value = value + i*multiplier;
+                    }
+                    multiplier = multiplier / 10;
+
+
+                }
+                t.setValue(value);
+                taskValues.add(value);
+            }
+
+//            int o = 0;
+//            List<Integer> orderList = new ArrayList<>();
+//
+//            for(Task t : allTasks){
+//                int maxVal = 0;
+//                if(orderList.size()>=1){
+//                    maxVal = Collections.max(taskValues);
+//                }
+//
+//
+//
+//                for(Integer val : taskValues){
+//                    if (maxVal == t.value){
+//                        t.setOrder(o);
+////                        if(taskValues.size() > 1){
+////                            taskValues.remove(0);
+////                        }
+//                    }
+//                }
+//                o = o+1;
+//                orderList.add(o);
+//
+//
+//            }
+////        for(Task t : allTasks){
+////            if
+////        }
         }
 
+        catch(Exception e){
+            throw new Exception("Failed to update order: " + e.getMessage());
+        }
+    }
+
+    public List<Task> sortByOrder(List<Task> taskList) throws Exception{
+        try{
+            List<Task> finalOrderList = taskList;
+            List<Integer> orderList = new ArrayList<>();
+            for(Task t: taskList){
+                orderList.add(t.order);
+            }
+
+            for(Task t: taskList){
+                int minVal = Collections.min(orderList);
+                for(int ord: orderList){
+                    if(t.order == ord){
+                        finalOrderList.add(t);
+//                        if(orderList.size()>1){
+//                            orderList.remove(0);
+//                        }
+                    }
+
+                }
+            }
+            return finalOrderList;
+        }
+        catch(Exception e){
+            throw new Exception("Failed to sort: " + e.getMessage());
+        }
     }
 }
 

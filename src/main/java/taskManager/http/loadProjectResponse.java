@@ -14,14 +14,16 @@ public class loadProjectResponse {
     public final String percentComplete;
     public final int statusCode;
     public final String error;
+    public int isArchived;
 
-    public loadProjectResponse(String name, List<Teammate> mems, List<Task> tasks, String percentComplete, int statusCode){
+    public loadProjectResponse(String name, List<Teammate> mems, List<Task> tasks, String percentComplete, int statusCode, int isArchived){
         this.name = name;
         this.teammates = mems;
         this.tasks = tasks;
         this.percentComplete = percentComplete;
         this.statusCode = statusCode;
         this.error = "";
+        this.isArchived = isArchived;
     }
 
     public loadProjectResponse(int statusCode, String error){

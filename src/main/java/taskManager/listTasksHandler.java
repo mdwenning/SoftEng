@@ -13,7 +13,8 @@ import java.util.List;
 public class listTasksHandler implements RequestHandler<listTasksRequest, listTasksResponse> {
     List<Task> getTasks(String projectName) throws Exception{
         projectsDAO dao = new projectsDAO();
-        return dao.getAllTasks(projectName);
+        List<Task> allTasks = dao.getAllTasks(projectName);
+        return allTasks;//dao.sortByOrder(allTasks);
     }
     @Override
     public listTasksResponse handleRequest(listTasksRequest req, Context context){

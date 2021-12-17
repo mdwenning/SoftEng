@@ -12,6 +12,7 @@ public class Task {
     public List<String> assignees;
     public final int isComplete;
     public final int sequence;
+    public int value;
     public int order;
 
     public Task(String idTask, String idProject, String idParent, String name, int isComplete, int sequence){
@@ -51,5 +52,6 @@ public class Task {
         this.sequence = sequence;
     }
 
+    public void setValue(int val){this.value = val;}
     public void setOrder(int order){this.order = order;}
 }

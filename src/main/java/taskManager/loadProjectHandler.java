@@ -26,6 +26,10 @@ public class loadProjectHandler implements RequestHandler<loadProjectRequest, lo
         projectsDAO dao = new projectsDAO();
         return dao.getPerc(projectName);
     }
+    Project getProject(String projName) throws Exception{
+        projectsDAO dao = new projectsDAO();
+        return dao.getProject(projName);
+    }
 
     @Override
     public loadProjectResponse handleRequest(loadProjectRequest req, Context context){
@@ -33,7 +37,8 @@ public class loadProjectHandler implements RequestHandler<loadProjectRequest, lo
         try{
             List<Teammate> memList = getTeammates(req.name);
             List<Task> tasks = getTasks(req.name);
-            response = new loadProjectResponse(req.name, memList, tasks, getPercentage(req.name),200);
+
+            response = new loadProjectResponse(req.name, memList, tasks, getPercentage(req.name),200, getProject(req.name).isArchived);
         }
         catch(Exception e){
             response = new loadProjectResponse(403, e.getMessage());
