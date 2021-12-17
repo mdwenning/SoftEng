@@ -681,6 +681,16 @@ public class projectsDAO {
                 int sub1Int = (int)sub1 - 48;
                 char sub2 = t.name.charAt(4);
                 int sub2Int = (int)sub2 - 48;
+                char sub3 = t.name.charAt(4);
+                int sub3Int = (int)sub3 - 48;
+                char sub4 = t.name.charAt(4);
+                int sub4Int = (int)sub4 - 48;
+                char sub5 = t.name.charAt(4);
+                int sub5Int = (int)sub5 - 48;
+                char sub6 = t.name.charAt(4);
+                int sub6Int = (int)sub6 - 48;
+                char sub7 = t.name.charAt(4);
+                int sub7Int = (int)sub7 - 48;
 
                 if(mainInt > 0 && mainInt<4){
                     lst.add(mainInt);
@@ -691,15 +701,33 @@ public class projectsDAO {
                 if(sub2Int > 0 && sub2Int<4){
                     lst.add(sub2Int);
                 }
+                if(sub3Int > 0 && sub3Int<4){
+                    lst.add(sub3Int);
+                }
+                if(sub4Int > 0 && sub4Int<4){
+                    lst.add(sub4Int);
+                }
+                if(sub5Int > 0 && sub5Int<4){
+                    lst.add(sub5Int);
+                }
+                if(sub6Int > 0 && sub6Int<4){
+                    lst.add(sub6Int);
+                }
+                if(sub7Int > 0 && sub7Int<4){
+                    lst.add(sub7Int);
+                }
 
                 int value = 0;
-                int multiplier = 100;
+                int multiplier = 1000000;
                 for(Integer i: lst){
 
                     if (i == 1 || i == 2 || i == 3 || i == 4 || i == 5 || i == 6 || i == 7 || i == 8 || i == 9){
                             value = value + i*multiplier;
                     }
-                    multiplier = multiplier / 10;
+                    if(multiplier > 1){
+                        multiplier = multiplier / 10;
+                    }
+
 
 
                 }
@@ -741,31 +769,31 @@ public class projectsDAO {
         }
     }
 
-    public List<Task> sortByOrder(List<Task> taskList) throws Exception{
-        try{
-            List<Task> finalOrderList = taskList;
-            List<Integer> orderList = new ArrayList<>();
-            for(Task t: taskList){
-                orderList.add(t.order);
-            }
-
-            for(Task t: taskList){
-                int minVal = Collections.min(orderList);
-                for(int ord: orderList){
-                    if(t.order == ord){
-                        finalOrderList.add(t);
-//                        if(orderList.size()>1){
-//                            orderList.remove(0);
-//                        }
-                    }
-
-                }
-            }
-            return finalOrderList;
-        }
-        catch(Exception e){
-            throw new Exception("Failed to sort: " + e.getMessage());
-        }
-    }
+//    public List<Task> sortByOrder(List<Task> taskList) throws Exception{
+//        try{
+//            List<Task> finalOrderList = taskList;
+//            List<Integer> orderList = new ArrayList<>();
+//            for(Task t: taskList){
+//                orderList.add(t.order);
+//            }
+//
+//            for(Task t: taskList){
+//                int minVal = Collections.min(orderList);
+//                for(int ord: orderList){
+//                    if(t.order == ord){
+//                        finalOrderList.add(t);
+////                        if(orderList.size()>1){
+////                            orderList.remove(0);
+////                        }
+//                    }
+//
+//                }
+//            }
+//            return finalOrderList;
+//        }
+//        catch(Exception e){
+//            throw new Exception("Failed to sort: " + e.getMessage());
+//        }
+//    }
 }
 

@@ -24,6 +24,7 @@ public class extraModelsTest extends LambdaTest {
             assigneesTest.add("teammate2");
 
             Task taskTest = new Task("taskID", "projID", "parentID", "taskName", assigneesTest, 1, 1);
+            taskTest.setOrder(5);
             Assert.assertEquals("taskID", taskTest.idTask);
             Assert.assertEquals("projID", taskTest.idProject);
             Assert.assertEquals("parentID", taskTest.idParent);
@@ -31,6 +32,7 @@ public class extraModelsTest extends LambdaTest {
             Assert.assertEquals(assigneesTest, taskTest.assignees);
             Assert.assertEquals(1, taskTest.isComplete);
             Assert.assertEquals(1, taskTest.sequence);
+            Assert.assertEquals(5, taskTest.order);
         }
         catch (Exception e) {
             e.printStackTrace();
