@@ -675,47 +675,64 @@ public class projectsDAO {
             for(Task t : allTasks){
                 List<Integer> lst = new ArrayList<>();
 
-                char main = t.name.charAt(0);
-                int mainInt = (int)main - 48;
-                char sub1 = t.name.charAt(2);
-                int sub1Int = (int)sub1 - 48;
-                char sub2 = t.name.charAt(4);
-                int sub2Int = (int)sub2 - 48;
-                char sub3 = t.name.charAt(4);
-                int sub3Int = (int)sub3 - 48;
-                char sub4 = t.name.charAt(4);
-                int sub4Int = (int)sub4 - 48;
-                char sub5 = t.name.charAt(4);
-                int sub5Int = (int)sub5 - 48;
-                char sub6 = t.name.charAt(4);
-                int sub6Int = (int)sub6 - 48;
-                char sub7 = t.name.charAt(4);
-                int sub7Int = (int)sub7 - 48;
+                if(t.name.length()>0){
+                    char main = t.name.charAt(0);
+                    int mainInt = (int)main - 48;
+                    if(mainInt > 0 && mainInt<8){
+                        lst.add(mainInt);
+                    }
+                }
+                if(t.name.length()>2){
+                    char sub1 = t.name.charAt(2);
+                    int sub1Int = (int)sub1 - 48;
+                    if(sub1Int > 0 && sub1Int<8){
+                        lst.add(sub1Int);
+                    }
+                }
+                if(t.name.length()>4){
+                    char sub2 = t.name.charAt(4);
+                    int sub2Int = (int)sub2 - 48;
+                    if(sub2Int > 0 && sub2Int<8){
+                        lst.add(sub2Int);
+                    }
+                }
+                if(t.name.length()>6){
+                    char sub3 = t.name.charAt(6);
+                    int sub3Int = (int)sub3 - 48;
+                    if(sub3Int > 0 && sub3Int<8){
+                        lst.add(sub3Int);
+                    }
+                }
+                if(t.name.length()>8){
+                    char sub4 = t.name.charAt(8);
+                    int sub4Int = (int)sub4 - 48;
+                    if(sub4Int > 0 && sub4Int<8){
+                        lst.add(sub4Int);
+                    }
+                }
+                if(t.name.length()>10){
+                    char sub5 = t.name.charAt(10);
+                    int sub5Int = (int)sub5 - 48;
+                    if(sub5Int > 0 && sub5Int<8){
+                        lst.add(sub5Int);
+                    }
+                }
+                if(t.name.length()>12){
+                    char sub6 = t.name.charAt(12);
+                    int sub6Int = (int)sub6 - 48;
+                    if(sub6Int > 0 && sub6Int<8){
+                        lst.add(sub6Int);
+                    }
+                }
+                if(t.name.length()>14){
+                    char sub7 = t.name.charAt(14);
+                    int sub7Int = (int)sub7 - 48;
+                    if(sub7Int > 0 && sub7Int<8){
+                        lst.add(sub7Int);
+                    }
+                }
 
-                if(mainInt > 0 && mainInt<4){
-                    lst.add(mainInt);
-                }
-                if(sub1Int > 0 && sub1Int<4){
-                    lst.add(sub1Int);
-                }
-                if(sub2Int > 0 && sub2Int<4){
-                    lst.add(sub2Int);
-                }
-                if(sub3Int > 0 && sub3Int<4){
-                    lst.add(sub3Int);
-                }
-                if(sub4Int > 0 && sub4Int<4){
-                    lst.add(sub4Int);
-                }
-                if(sub5Int > 0 && sub5Int<4){
-                    lst.add(sub5Int);
-                }
-                if(sub6Int > 0 && sub6Int<4){
-                    lst.add(sub6Int);
-                }
-                if(sub7Int > 0 && sub7Int<4){
-                    lst.add(sub7Int);
-                }
+
 
                 int value = 0;
                 int multiplier = 1000000;
