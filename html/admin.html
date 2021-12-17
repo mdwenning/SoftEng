@@ -178,7 +178,7 @@
     				if (tasks[i]['isComplete'] == 1) {
     					completeToggle = '<i style="color: green" class="fas fa-check"></i>';
     				}
-    				document.getElementById('tasks').innerHTML += "<tr><td>" + tasks[i]['name'] + " " + assignees + "</td><td>" + completeToggle + "</tr>";
+    				document.getElementById('tasks').innerHTML += "<tr id='" + tasks[i]['value'] + "'><td>" + tasks[i]['name'] + " " + assignees + "</td><td>" + completeToggle + "</tr>";
     				sortTasks();
     			}
             },
@@ -201,7 +201,7 @@
     		for (var i = 0; i < (rows.length - 1); i++) {
 				var shouldSwitch = false;
 
-      			if (rows[i].getElementsByTagName("td")[0].innerHTML > rows[i + 1].getElementsByTagName("td")[0].innerHTML) {
+      			if (rows[i].id > rows[i + 1].id) {
 					shouldSwitch = true;
 					break;
       			}

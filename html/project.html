@@ -29,6 +29,7 @@
 	<div class="container" id="content" style="display: none">
 		<a href="index.html" class="btn btn-primary mt-3" style="float: right">+ New Project</a>
 		<h1 id="proj-name" class="mt-3">Project name</h1>
+		<p id="message" class="text-muted"></p>
 		<div id="teamView" style="display: none">
 			<table class="table">
 				<thead>
@@ -139,7 +140,15 @@
     			}
     			document.getElementById('content').style.display = "block";
     			document.getElementById('loader').style.display = "none";
-    			getTeammates();
+    			if (data['isArchived'] == 1) {
+    				document.getElementById('add-teammate').style.display = "none";
+    				document.getElementById('new-teammate').style.display = "none";
+    				document.getElementById('new-task').style.display = "none";
+    				document.getElementById('message').innerHTML = "<i class='fas fa-archive'></i> This project has been archived";
+    				getTeammates(true);
+    			} else {
+    				getTeammates(false);
+    			}
     			project_name = data['name'];
     			document.getElementById('proj-name').innerHTML = project_name.replaceAll("+", " ");
             },
@@ -150,7 +159,7 @@
         });
 	}
 	
-	function getTeammates() {
+	function getTeammates(archived) {
 		const params = new URLSearchParams(window.location.search);
 		const proj_id = params.get('pid');
 		const view = params.get('view');
@@ -164,10 +173,15 @@
     			document.getElementById('teammate-list').innerHTML = "";
     			teammates = data['list'];
     			for (var i = 0; i < teammates.length; i++) {
-    				document.getElementById('teammates').innerHTML += "<tr><td>" + teammates[i]['name'] + " ( <i style='color: red; cursor: pointer' class='fas fa-trash-alt' onclick='deleteTeammate(\"" + teammates[i]['name'] + "\");'></i> )</td><td id='" + teammates[i]['name'] + "-tasks'></td><td id='" + teammates[i]['name'] + "-completed'></td></tr>";
-    				document.getElementById('teammate-list').innerHTML += "<tr><td>" + teammates[i]['name'] + "</td><td><i style='color: red; cursor: pointer' class='fas fa-trash-alt' onclick='deleteTeammate(\"" + teammates[i]['name'] + "\");'></i></td></tr>";
+    				if (archived) {
+    					document.getElementById('teammates').innerHTML += "<tr><td>" + teammates[i]['name'] + "</td><td id='" + teammates[i]['name'] + "-tasks'></td><td id='" + teammates[i]['name'] + "-completed'></td></tr>";
+    					document.getElementById('teammate-list').innerHTML += "<tr><td>" + teammates[i]['name'] + "</td></tr>";
+    				} else {
+    					document.getElementById('teammates').innerHTML += "<tr><td>" + teammates[i]['name'] + " ( <i style='color: red; cursor: pointer' class='fas fa-trash-alt' onclick='deleteTeammate(\"" + teammates[i]['name'] + "\");'></i> )</td><td id='" + teammates[i]['name'] + "-tasks'></td><td id='" + teammates[i]['name'] + "-completed'></td></tr>";
+    					document.getElementById('teammate-list').innerHTML += "<tr><td>" + teammates[i]['name'] + "</td><td><i style='color: red; cursor: pointer' class='fas fa-trash-alt' onclick='deleteTeammate(\"" + teammates[i]['name'] + "\");'></i></td></tr>";
+    				}
     			}
-    			getTasks();
+    			getTasks(archived);
             },
             error: function(xhr, status, error) 
             {
@@ -176,7 +190,7 @@
         });
 	}
 	
-	function getTasks() {
+	function getTasks(archived) {
 		const params = new URLSearchParams(window.location.search);
 		const proj_id = params.get('pid');
 	
@@ -187,16 +201,25 @@
     		{
     			document.getElementById('tasks').innerHTML = "";
     			tasks = data['list'];
+    			
     			for (var i = 0; i < tasks.length; i++) {
     				var assignees = "(" + tasks[i]['assignees'].join(", ") + ")";
     				if (assignees == "()") {
     					assignees = "";
     				}
-    				var completeToggle = '<i class="far fa-square" style="cursor: pointer" onclick="markComplete(\'' + tasks[i]['idTask'] + '\');"></i>';
-    				if (tasks[i]['isComplete'] == 1) {
-    					completeToggle = '<i style="color: green; cursor: pointer" class="fas fa-check" onclick="markComplete(\'' + tasks[i]['idTask'] + '\');"></i>';
+    				if (archived) {
+						var completeToggle = 'Incomplete';
+						if (tasks[i]['isComplete'] == 1) {
+							completeToggle = '<i style="color: green;" class="fas fa-check"></i>';
+						}
+    					document.getElementById('tasks').innerHTML += "<tr id='" + tasks[i]['value'] + "'><td>" + tasks[i]['name'] + " " + assignees + "</td><td>" + completeToggle + "</td></tr>";
+    				} else {
+    					var completeToggle = '<i class="far fa-square" style="cursor: pointer" onclick="markComplete(\'' + tasks[i]['idTask'] + '\');"></i>';
+						if (tasks[i]['isComplete'] == 1) {
+							completeToggle = '<i style="color: green; cursor: pointer" class="fas fa-check" onclick="markComplete(\'' + tasks[i]['idTask'] + '\');"></i>';
+						}
+    					document.getElementById('tasks').innerHTML += "<tr id='" + tasks[i]['value'] + "'><td>" + tasks[i]['name'] + " " + assignees + "</td><td><i style='cursor: pointer' class='fas fa-pen' onclick='editTask(\"" + tasks[i]['idTask'] + "\");'></i></td><td><i class='fas fa-plus' style='cursor: pointer' onclick='subdivideTask(\"" + tasks[i]['idTask'] + "\");'></i></td><td><i style='cursor: pointer' class='fas fa-user-edit' onclick='assign(\"" + tasks[i]['idTask'] + "\");'></i></td><td>" + completeToggle + "</tr>";
     				}
-    				document.getElementById('tasks').innerHTML += "<tr id='" + tasks[i]['sequence'] + "'><td>" + tasks[i]['name'] + " " + assignees + "</td><td><i style='cursor: pointer' class='fas fa-pen' onclick='editTask(\"" + tasks[i]['idTask'] + "\");'></i></td><td><i class='fas fa-plus' style='cursor: pointer' onclick='subdivideTask(\"" + tasks[i]['idTask'] + "\");'></i></td><td><i style='cursor: pointer' class='fas fa-user-edit' onclick='assign(\"" + tasks[i]['idTask'] + "\");'></i></td><td>" + completeToggle + "</tr>";
     				for (var j = 0; j < tasks[i]['assignees'].length; j++) {
     					var lane = tasks[i]['assignees'][j] + "-tasks";
     					var icon = "";
