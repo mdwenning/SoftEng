@@ -319,7 +319,7 @@ public class projectsDAO {
 
     }
 
-    public boolean addTask(Task task) throws Exception{
+    public boolean addTask(Task task, String projectName) throws Exception{
         try{
             PreparedStatement ps = conn.prepareStatement("SELECT * FROM " + "sys.Task" + " WHERE (name, idProject) = (?,?);");
             ps.setString(1, task.name);
@@ -652,6 +652,16 @@ public class projectsDAO {
         catch(Exception e){
             throw new Exception("Failed to decompose: " + e.getMessage());
         }
+    }
+
+    public void updateOrder(Task task, String projectName) throws Exception{
+        Project project = getProject(projectName);
+        List<Task> allTasks = getAllTasks(project.name);
+
+        for(Task t : allTasks){
+            String[] tempArr = t.name.split(".");
+        }
+
     }
 }
 

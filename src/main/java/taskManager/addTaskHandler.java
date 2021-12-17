@@ -17,7 +17,7 @@ public class addTaskHandler implements RequestHandler<addTaskRequest, addTaskRes
         sequence = dao.getNextSequence(project.name, null);
         Task task = new Task(name, project.idProject, sequence);
         id = task.idTask;
-        return dao.addTask(task);
+        return dao.addTask(task, projectName);
     }
 
     @Override
